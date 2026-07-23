@@ -1,3 +1,17 @@
+## Roadmap
+
+- [x] Project planning
+- [x] Git repository setup
+- [ ] Backend setup
+- [ ] Authentication
+- [ ] File uploads
+- [ ] AI processing
+- [ ] Search
+- [ ] Dashboard
+- [ ] Deployment
+
+
+
 Week 1 – Foundation
 ✅ Finalize the feature list (keep the MVP small)
 ✅ Design the database schema
