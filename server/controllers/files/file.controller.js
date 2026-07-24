@@ -6,6 +6,8 @@ const cloudinary = require("../../config/cloudinary");
 const File = require("../../models/file.model")
 const streamifier = require("streamifier");
 const geminiService = require("../../services/gemini.service");
+const embeddingService = require("../../services/embedding.service");
+
 
 const fileController = {};
 
@@ -32,32 +34,73 @@ fileController.createFile = async (req, res) => {
         if (req.file.mimetype.startsWith("image/")) fileType = "image";
         else if (req.file.mimetype === "application/pdf") fileType = "pdf";
 
-        let aiDescription = null;
+        let aiData = null;
 
         if (fileType === "image") {
-            aiDescription = await geminiService.describeImage(
+            aiData = await geminiService.describeImage(
                 req.file.buffer,
                 req.file.mimetype
             );
 
-            console.log(aiDescription);
+            // console.log(aiData);
         }
+
+        const textForEmbedding = `
+        Titre: ${aiData.title}
+        Description: ${aiData.description}
+        Tags: ${aiData.tags}
+        Category: ${aiData.category}
+        `
+        const embedding = await embeddingService.generateEmbedding(textForEmbedding);
         const newFile = await File.create({
             user: req.body.user,
             originalName: req.file.originalname,
             publicId: uploadResult.public_id,
             url: uploadResult.secure_url,
+            title: aiData.title,
+            category: aiData.category,
+            tags: aiData.tags,
             fileType: fileType,
             mimeType: req.file.mimetype,
             size: req.file.size,
-            aiDescription
+            aiDescription: aiData.description,
+            embedding
         });
 
-        res.status(201).json(newFile);
+        console.log(embedding)
+        res.status(201).json({ newFile, aiData, embedding });
 
     } catch (err) {
         return res.status(500).json({ "message": "server error", "error": err.message })
     }
+}
+
+fileController.getFiles = async (req, res) => {
+    // Every file and every query is converted into a semantic embedding. MongoDB Atlas Vector Search retrieves the closest vectors using cosine similarity.
+    const { q } = req.query;
+    const queryEmbedding = await embeddingService.generateEmbedding(q);
+    if (!q) {
+
+        return res.status(400).json({
+            message: "Search query is required"
+        })
+    }
+
+    const files = await File.aggregate(
+        [
+           {
+                $vectorSearch: {
+                    index: "default",
+                    path: "embedding",
+                    queryVector: queryEmbedding,
+                    numCandidates: 100,
+                    limit: 10
+                }
+            }
+    ]
+    )
+
+    res.status(200).json(files);
 }
 
 module.exports = fileController;

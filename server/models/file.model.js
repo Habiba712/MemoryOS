@@ -37,6 +37,10 @@ const fileSchema = new mongoose.Schema(
       enum: ["image", "pdf", "document"],
       required: true,
     },
+    title: {
+        type: String,
+        required: false
+    },
     mimeType: {
       type: String,
       required: true, // e.g. "image/png", "application/pdf"
@@ -62,14 +66,17 @@ const fileSchema = new mongoose.Schema(
       default: "",
     },
     embedding: {
-      // Only include this if you're storing vectors directly in Mongo (Atlas Vector Search).
-      // If using Pinecone/Qdrant instead, replace with `embeddingId: String` as a pointer.
+ 
       type: [Number],
-      default: undefined,
+      default: [],
     },
     tags: {
       type: [String],
       default: [],
+    },
+    category:{
+        type: String
+
     },
 
     // --- Processing pipeline state ---
