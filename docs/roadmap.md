@@ -3,7 +3,7 @@
 - [x] Project planning
 - [x] Git repository setup
 - [ ] Backend setup
-- [ ] Authentication
+- [x] Authentication
 - [ ] File uploads
 - [ ] AI processing
 - [ ] Search
