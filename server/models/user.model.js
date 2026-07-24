@@ -77,7 +77,7 @@ const UserSchema = mongoose.Schema({
   
 });
 
-UserSchema.pre('save', async function (next) {
+UserSchema.pre('save', async function () {
     try {
         if ((this.base.password).isModified || this.isNew) {
             const ifAlreadyHashed = /^\$2[ayb]\$.{56}$/.test(this.base.password);
@@ -85,11 +85,11 @@ UserSchema.pre('save', async function (next) {
             if (!ifAlreadyHashed) {
                 this.base.password = await hashPass(this.base.password)
             }
-            next();
+           
 
         }
     } catch (err) {
-        next(err)
+       
     }
 
 })
