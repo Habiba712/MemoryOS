@@ -45,6 +45,10 @@ const fileSchema = new mongoose.Schema(
       type: Number, // bytes
       required: true,
     },
+    aiDescription: {
+        type: String,
+        required: false
+    },
 
     // --- Semantic search core ---
     extractedText: {

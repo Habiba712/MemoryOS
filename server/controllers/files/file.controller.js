@@ -5,20 +5,20 @@ const mongoose = require("mongoose");
 const cloudinary = require("../../config/cloudinary");
 const File = require("../../models/file.model")
 const streamifier = require("streamifier");
-
+const geminiService = require("../../services/gemini.service");
 
 const fileController = {};
 
 fileController.createFile = async (req, res) => {
-    try{
+    try {
         console.log(req.file, req.body)
-        if(!req.file){
-            return res.status(400).json({"message": "No file provided"})
+        if (!req.file) {
+            return res.status(400).json({ "message": "No file provided" })
         }
 
         const uploadResult = await new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
-                { resource_type: "auto"},
+                { resource_type: "auto" },
                 (error, result) => {
                     if (error) reject(error);
                     else resolve(result);
@@ -29,9 +29,19 @@ fileController.createFile = async (req, res) => {
         });
 
         let fileType = "document";
-        if(req.file.mimetype.startsWith("image/")) fileType = "image";
+        if (req.file.mimetype.startsWith("image/")) fileType = "image";
         else if (req.file.mimetype === "application/pdf") fileType = "pdf";
 
+        let aiDescription = null;
+
+        if (fileType === "image") {
+            aiDescription = await geminiService.describeImage(
+                req.file.buffer,
+                req.file.mimetype
+            );
+
+            console.log(aiDescription);
+        }
         const newFile = await File.create({
             user: req.body.user,
             originalName: req.file.originalname,
@@ -39,13 +49,14 @@ fileController.createFile = async (req, res) => {
             url: uploadResult.secure_url,
             fileType: fileType,
             mimeType: req.file.mimetype,
-            size: req.file.size
+            size: req.file.size,
+            aiDescription
         });
 
         res.status(201).json(newFile);
 
-    }catch(err){
-        return res.status(500).json({"message": "server error", "error":err.message})
+    } catch (err) {
+        return res.status(500).json({ "message": "server error", "error": err.message })
     }
 }
 
