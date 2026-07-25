@@ -7,6 +7,7 @@ const File = require("../../models/file.model")
 const streamifier = require("streamifier");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
+const ocrService = require("../../services/ocr.service");
 
 
 const fileController = {};
@@ -31,9 +32,14 @@ fileController.createFile = async (req, res) => {
         });
 
         let fileType = "document";
+
         if (req.file.mimetype.startsWith("image/")) fileType = "image";
         else if (req.file.mimetype === "application/pdf") fileType = "pdf";
 
+        let extractedText = "";
+        if(fileType === "image" ) {
+            extractedText = await ocrService.extractText(req.file.buffer);
+        }
         let aiData = null;
 
         if (fileType === "image") {
@@ -48,9 +54,11 @@ fileController.createFile = async (req, res) => {
         const textForEmbedding = `
         Titre: ${aiData.title}
         Description: ${aiData.description}
-        Tags: ${aiData.tags}
+        Tags: ${aiData.tags.join(", ")}
         Category: ${aiData.category}
+        OCR: ${extractedText}
         `
+        console.log(textForEmbedding)
         const embedding = await embeddingService.generateEmbedding(textForEmbedding);
         const newFile = await File.create({
             user: req.body.user,
@@ -64,7 +72,8 @@ fileController.createFile = async (req, res) => {
             mimeType: req.file.mimetype,
             size: req.file.size,
             aiDescription: aiData.description,
-            embedding
+            embedding,
+            extractedText
         });
 
         console.log(embedding)
