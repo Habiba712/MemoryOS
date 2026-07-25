@@ -84,6 +84,27 @@ AI Processing
 
 Metadata + Embeddings
 
+
+Why do we need OCR if Gemini already describes images?
+
+Suppose someone uploads this:
+
+Invoice #5298
+Amazon
+$84.92
+
+Gemini may say
+
+"An invoice from an online purchase."
+
+That's helpful...
+
+But OCR extracts
+
+Invoice #5298
+Amazon
+$84.92
+
 ↓
 
 MongoDB Atlas
