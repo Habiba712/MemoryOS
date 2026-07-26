@@ -18,7 +18,7 @@ export default function LoginPage() {
 
     try {
       // TODO: hook this up to your auth endpoint
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(`http://localhost:4000/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export default function LoginPage() {
         throw new Error(data.message || "Something went wrong");
       }
 
-      window.location.href = "/dashboard";
+      window.location.href = "/";
     } catch (err) {
       setError(err.message);
     } finally {
