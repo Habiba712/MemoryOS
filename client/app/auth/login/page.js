@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+    
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,12 +28,20 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!res.ok) {
+      if (res.ok) {
         const data = await res.json();
+         localStorage.setItem("sessionData", JSON.stringify(data));
+        document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict; Secure`;
+      }
+      else{
+          setErrorMessage("Invalid email or password.");
+        setEmail("");
+        setPassword("");
         throw new Error(data.message || "Something went wrong");
+
       }
 
-      window.location.href = "/";
+      window.location.href = "/dashboard/dashboard";
     } catch (err) {
       setError(err.message);
     } finally {
@@ -40,7 +50,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a14] relative overflow-hidden flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-[#0a0a14] relative overflow-hidden flex items-center justify-center px-4 py-10 w-full">
       {/* ambient glow */}
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
       <div className="absolute top-1/3 -right-32 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl" />

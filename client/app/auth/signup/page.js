@@ -50,7 +50,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white relative overflow-hidden flex items-center justify-center px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 to-white relative overflow-hidden flex items-center justify-center px-4 py-10 w-full">
       <div className="hidden lg:block absolute left-12 top-1/3 w-16 h-16 bg-violet-100/60 rounded-2xl border border-violet-100" />
       <div className="hidden lg:block absolute right-16 top-24 w-14 h-14 bg-violet-100/60 rounded-2xl border border-violet-100" />
 
@@ -156,7 +156,7 @@ export default function SignupPage() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Already have an account?{" "}
-            <Link href="/pages/login" className="text-violet-600 hover:text-violet-500 font-medium">
+            <Link href="/auth/login" className="text-violet-600 hover:text-violet-500 font-medium">
               Log in
             </Link>
           </p>
