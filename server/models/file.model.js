@@ -45,6 +45,10 @@ const fileSchema = new mongoose.Schema(
       type: String,
       required: true, // e.g. "image/png", "application/pdf"
     },
+    favorite :{
+        type: Boolean,
+        default: false
+    },
     size: {
       type: Number, // bytes
       required: true,
