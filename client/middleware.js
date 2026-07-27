@@ -3,22 +3,23 @@ import { NextResponse } from 'next/server';
 export async function middleware(request) {
     const { pathname } = request.nextUrl;
 
+    console.log("Middleware hit:", request.nextUrl.pathname);
     // 1. Define public access paths (add the exact landing page root if needed, but here it's protected)
     const isPublicPage = pathname.includes('/login') || 
-                         pathname.includes('/register') || 
-                         pathname.includes('/')
+                         pathname.includes('/register')
                          
     const token = request.cookies.get('token')?.value;
+    console.log('token', token)
 
     // Case A: Unauthenticated access to protected boundaries (including root '/')
     if (!token && !isPublicPage) {
-        return NextResponse.redirect(new URL('/pages/login', request.url));
+        return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
     // Case B: Authenticated validation handshake
     if (token && !isPublicPage) {
         try {
-            const verifyRes = await fetch(`http://localhost:4000/api/auth/verify`, {
+            const verifyRes = await fetch(`http://localhost:4000/api/auth/verify-session`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -26,7 +27,8 @@ export async function middleware(request) {
             });
 
             if (!verifyRes.ok) {
-                const response = NextResponse.redirect(new URL('/pages/login', request.url));
+                console.error('Token verification failed:', verifyRes.statusText);
+                const response = NextResponse.redirect(new URL('/auth/login', request.url));
                 response.cookies.delete('token'); 
                 return response;
             }

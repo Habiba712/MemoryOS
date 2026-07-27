@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
 
-import Dashboard from "@/app/pages/dashboard/page";
 import HeroSection from "./hero";
 
 export default function Home() {

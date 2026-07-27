@@ -7,10 +7,10 @@ import BrainIcon from "@/assests/brain.js";
 import { useRouter } from "next/navigation";
  
 const navItems = [
-  { label: "Home", href: "/pages/dashboard", icon: Home },
+  { label: "Home", href: "/dashboard/dashboard",icon: Home },
   { label: "Search", href: "/dashboard/search", icon: Search },
-  { label: "Upload", href: "/pages/upload", icon: Upload },
-  { label: "Collections", href: "/pages/collections", icon: Layers },
+  { label: "Upload", href: "/dashboard/upload", icon: Upload },
+  { label: "Collections", href: "/dashboard/collections", icon: Layers },
 ];
 
 

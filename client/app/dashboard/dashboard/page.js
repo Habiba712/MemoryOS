@@ -24,7 +24,7 @@ import {
 // swap this for a real session/user fetch once auth is wired up
 const CURRENT_USER = { name: "Habiba", initial: "H" };
 
-export default function Dashboard() {
+export default function DashboardPage(){
   const [query, setQuery] = useState("");
   const [stats, setStats] = useState(null);
   const [recentFiles, setRecentFiles] = useState([]);
@@ -61,7 +61,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50 w-full">
 
       <main className="flex-1 px-8 py-6">
         <div className="flex items-center justify-between mb-6">

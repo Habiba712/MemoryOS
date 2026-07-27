@@ -136,6 +136,8 @@ authController.verifySession = async (req, res) => {
   try {
 
     const dbUser = await User.findById(req?.user?.id).select('-base.password');
+    console.log('dbUser', dbUser)
+    console.log('req.user', req.user)
     if (!dbUser) {
       console.log(`User ID ${req.user.id} was deleted. invalidating session.`);
       return res.status(401).json({ message: 'User associated with this session no longer exists.' });

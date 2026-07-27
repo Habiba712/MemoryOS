@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, Search, FolderOpen, ShieldCheck } from "lucide-react";
 import BrainIcon from "@/assests/brain.js";
+import {useRouter} from "next/navigation";
 
 
 export default function LoginPage() {
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
     
 
   async function handleSubmit(e) {
@@ -24,14 +26,18 @@ export default function LoginPage() {
       // TODO: hook this up to your auth endpoint
       const res = await fetch(`http://localhost:4000/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       if (res.ok) {
-        const data = await res.json();
-         localStorage.setItem("sessionData", JSON.stringify(data));
+           const data = await res.json();
+        localStorage.setItem("sessionData", JSON.stringify(data));
         document.cookie = `token=${data.token}; path=/; max-age=86400; SameSite=Strict; Secure`;
+        // console.log('document token', request.cookies.get('token')?.value)
+         router.push("/dashboard/dashboard");
+
       }
       else{
           setErrorMessage("Invalid email or password.");
@@ -40,13 +46,11 @@ export default function LoginPage() {
         throw new Error(data.message || "Something went wrong");
 
       }
+      setLoading(false);
 
-      window.location.href = "/dashboard/dashboard";
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } 
   }
 
   return (
