@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, Search, FolderOpen, ShieldCheck } from "lucide-react";
+import BrainIcon from "@/assests/brain.js";
+
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -51,7 +53,7 @@ export default function LoginPage() {
         <div className="flex flex-col items-center mb-8">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-9 h-9 rounded-xl bg-violet-500/20 flex items-center justify-center text-violet-400 text-lg">
-              ∞
+              <BrainIcon className="w-10 h-10 text-violet-400" />
             </div>
             <span className="text-2xl font-semibold text-white">
               Memory<span className="text-violet-400">OS</span>

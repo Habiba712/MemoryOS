@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "@/app/components/sideBar";
 import {
   Search,
   Bell,
@@ -62,7 +62,6 @@ export default function Dashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <Sidebar />
 
       <main className="flex-1 px-8 py-6">
         <div className="flex items-center justify-between mb-6">
