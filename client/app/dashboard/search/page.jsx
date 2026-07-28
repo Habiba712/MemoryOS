@@ -36,10 +36,11 @@ export default function SearchPage() {
   async function runSearch(q, filter) {
     setLoading(true);
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${filter}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/search?q=${encodeURIComponent(q)}&type=${filter}`);
       if (!res.ok) throw new Error("Search failed");
       const data = await res.json();
-      setResults(data.results);
+      console.log(data)
+      setResults(data);
     } catch (err) {
       console.error(err);
       setResults(FALLBACK_RESULTS.filter((r) => filter === "all" || r.fileType === filter));
@@ -126,9 +127,9 @@ function ResultCard({ result }) {
       className="flex items-start gap-4 bg-white border border-gray-200 rounded-xl p-3 hover:shadow-md transition-shadow"
     >
       <div className="relative w-24 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-        {result.thumbnailUrl ? (
+        {result.url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={result.thumbnailUrl} alt={result.name} className="w-full h-full object-cover" />
+          <img src={result.url} alt={result.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
             <FileText className="w-6 h-6" />
@@ -145,16 +146,16 @@ function ResultCard({ result }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-sm font-medium text-gray-900 truncate">{result.name}</p>
+          <p className="text-sm font-medium text-gray-900 truncate">{result.title}</p>
           <span className="shrink-0 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
             {result.matchScore}%
           </span>
         </div>
         <p className="text-xs text-gray-400 mt-0.5">
-          {result.extension} · Uploaded {result.uploadedAgo}
+          {result.fileType} · Uploaded {result.updatedAt}
         </p>
         <p className="text-xs text-gray-400 mt-1.5 truncate">
-          Matched because: {result.matchedTerms.join(", ")}
+          Matched because: 
         </p>
       </div>
     </a>

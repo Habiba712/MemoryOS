@@ -112,4 +112,10 @@ fileController.getFiles = async (req, res) => {
     res.status(200).json(files);
 }
 
+fileController.getFilesByUser = async (req, res) => {
+    const { userId } = req.params;
+    const files = await File.find({ user: userId }).populate("user");
+    res.status(200).json(files);
+}
+
 module.exports = fileController;

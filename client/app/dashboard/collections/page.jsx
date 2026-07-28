@@ -17,28 +17,78 @@ import {
 export default function CollectionsPage() {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
 
-  useEffect(() => {
-    async function loadCollections() {
-      try {
-        const res = await fetch("/api/collections");
-        if (!res.ok) throw new Error("Failed to load collections");
-        const data = await res.json();
-        setCollections(data.collections);
-      } catch (err) {
-        console.error(err);
-        setCollections(FALLBACK_COLLECTIONS);
-      } finally {
-        setLoading(false);
-      }
+  const loadCollections = async function loadCollections() {
+    if (!userId || !token) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/filesByUser/${userId}`,
+
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
+      if (!res.ok) throw new Error("Failed to load collections");
+      const data = await res.json();
+      const groupedCollections = Object.values(
+        data.reduce((acc, file) => {
+          const category = file.category || "Other";
+          const config = categoryConfig[category] || {
+            icon: <Sparkles className="w-5 h-5 text-violet-600" />,
+            bg: "bg-violet-50",
+          }
+
+          if(!acc[category]){
+            acc[category] = {
+              _id: category,
+              name: category,
+              slug: category.toLowerCase().replaceAll(" ", "-"),
+              description: `Files related to ${category}`,
+              fileCount: 0,
+              description: "",
+              icon: config.icon,
+              iconBg: config.bg,
+              files: []
+            }
+          
+            }
+          acc[category].fileCount++;
+          acc[category].files.push(file);
+
+          return acc;
+          
+    }, {}));
+
+      setCollections(groupedCollections);
+      console.log(groupedCollections)
+
+    } catch (err) {
+      console.error(err);
+      setCollections(FALLBACK_COLLECTIONS);
+    } finally {
+      setLoading(false);
     }
+  }
+  useEffect(() => {
+    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+    console.log('data', sessionData)
+    setUserId(sessionData ? sessionData.userId : null);
+    setToken(sessionData ? sessionData.token : null);
+  }, []);
+  useEffect(() => {
 
     loadCollections();
-  }, []);
+  }, [userId, token]);
 
+
+  console.log('us rd', userId)
   return (
     <div className="flex min-h-screen bg-gray-50 w-full">
- 
+
       <main className="flex-1 px-8 py-6 w-full">
         <div className="flex items-center justify-between mb-1">
           <h1 className="text-xl font-semibold text-gray-900">Collections</h1>
@@ -56,7 +106,7 @@ export default function CollectionsPage() {
         ) : (
           <div className="grid grid-cols-3 gap-4">
             {collections.map((c) => (
-              <CollectionCard key={c.slug} collection={c} />
+              <CollectionCard key={c._id} collection={c} />
             ))}
           </div>
         )}
@@ -158,3 +208,25 @@ const FALLBACK_COLLECTIONS = [
     iconBg: "bg-violet-50",
   },
 ];
+const categoryConfig = {
+  Programming: {
+    icon: <Code2 className="w-5 h-5 text-blue-600" />,
+    bg: "bg-blue-50",
+  },
+  Design: {
+    icon: <Palette className="w-5 h-5 text-pink-600" />,
+    bg: "bg-pink-50",
+  },
+  Food: {
+    icon: <UtensilsCrossed className="w-5 h-5 text-orange-600" />,
+    bg: "bg-orange-50",
+  },
+  Travel: {
+    icon: <Plane className="w-5 h-5 text-sky-600" />,
+    bg: "bg-sky-50",
+  },
+  Research: {
+    icon: <FlaskConical className="w-5 h-5 text-emerald-600" />,
+    bg: "bg-emerald-50",
+  },
+};
