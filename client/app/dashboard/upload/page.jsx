@@ -1,14 +1,17 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState , useEffect} from "react";
 import { UploadCloud, Image as ImageIcon, FileText, Play, Check, X } from "lucide-react";
 
 export default function UploadPage() {
   const [items, setItems] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef(null);
-
+  const [userId, setUserId] = useState(null);
+const [token, setToken] = useState(null);
+console.log("userId", userId)
   const handleFiles = useCallback((fileList) => {
+    // if (!userId) return;
     if (!fileList || fileList.length === 0) return;
 
     const newItems = Array.from(fileList).map((file) => ({
@@ -20,14 +23,17 @@ export default function UploadPage() {
 
     setItems((prev) => [...newItems, ...prev]);
     newItems.forEach(uploadFile);
-  }, []);
+  }, [userId]);
 
   function uploadFile(item) {
+
+    if (!userId) return;
     const formData = new FormData();
     formData.append("file", item.file);
+    formData.append("user", userId);
 
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "/api/files/upload");
+    xhr.open("POST", `${process.env.NEXT_PUBLIC_API_URL}/api/file/createFile`);
 
     xhr.upload.onprogress = (e) => {
       if (!e.lengthComputable) return;
@@ -50,15 +56,25 @@ export default function UploadPage() {
       setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, status: "error" } : i)));
     };
 
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
     xhr.send(formData);
   }
 
   function handleDrop(e) {
+    if (!userId) return;
     e.preventDefault();
     setIsDragging(false);
     handleFiles(e.dataTransfer.files);
   }
 
+  useEffect(() => {
+    const sessionData = JSON.parse(localStorage.getItem("sessionData"));
+
+    if (!sessionData) return;
+
+    setUserId(sessionData.userId);
+    setToken(sessionData.token);
+}, []);
   return (
     <div className="flex min-h-screen bg-gray-50 w-full">
 

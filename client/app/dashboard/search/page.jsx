@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, X, FileText, Play, ChevronDown } from "lucide-react";
+import Link from "next/link";
 
 const FILTERS = [
   { key: "all", label: "All" },
@@ -121,15 +122,16 @@ export default function SearchPage() {
 }
 
 function ResultCard({ result }) {
+  console.log('result', result._id)
   return (
-    <a
-      href={`/dashboard/files/${result.id}`}
+    <Link
+      href={`/dashboard/files/${result._id}`}
       className="flex items-start gap-4 bg-white border border-gray-200 rounded-xl p-3 hover:shadow-md transition-shadow"
     >
       <div className="relative w-24 h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-        {result.url ? (
+        {(result.url || result.thumbnailUrl) ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={result.url} alt={result.name} className="w-full h-full object-cover" />
+          <img src={result.thumbnailUrl || result.url} alt={result.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
             <FileText className="w-6 h-6" />
@@ -158,7 +160,7 @@ function ResultCard({ result }) {
           Matched because: 
         </p>
       </div>
-    </a>
+    </Link>
   );
 }
 

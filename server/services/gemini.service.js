@@ -27,13 +27,15 @@ Return ONLY valid JSON.
   "title": "",
   "description": "",
   "tags": [],
-  "category": ""
+  "category": "",
+  "summary": ""
 }
 
 Rules:
 - title: maximum 6 words.
 - description: 1-2 sentences.
 - tags: 5-10 relevant keywords.
+- summary: 1-2 sentences summarizing the image.
 - category: choose ONE from:
 Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
 
@@ -48,6 +50,44 @@ Return ONLY valid JSON.
     const text = response.text;
 
     const cleaned = text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    return JSON.parse(cleaned);
+};
+geminiService.describeText = async (text) => {
+
+    const response = await ai.models.generateContent({
+        model: "gemini-flash-latest",
+        contents: `
+Analyze the following document.
+
+Return ONLY valid JSON.
+
+{
+  "title": "",
+  "description": "",
+  "tags": [],
+  "category": "",
+  "summary": ""
+}
+
+Rules:
+- title: maximum 6 words.
+- description: 1-2 sentences summarizing the document.
+- tags: 5-10 relevant keywords.
+- summary: 1-2 sentences summarizing the document.
+- category: choose ONE from:
+Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
+
+Document:
+
+${text.slice(0, 12000)}
+`
+    });
+
+    const cleaned = response.text
         .replace(/```json/g, "")
         .replace(/```/g, "")
         .trim();

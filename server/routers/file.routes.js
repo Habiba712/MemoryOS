@@ -11,5 +11,6 @@ const upload = multer({ storage });
 router.post('/createFile', upload.single('file'),fileController.createFile);
 router.get('/search', fileController.getFiles);
 router.get('/filesByUser/:userId', fileController.getFilesByUser);
+router.get('/getFile/:id', fileController.getFile);
 
 module.exports = router;

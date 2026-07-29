@@ -8,13 +8,18 @@ const streamifier = require("streamifier");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
 const ocrService = require("../../services/ocr.service");
-
+const pdfService = require("../../services/pdf.service");
 
 const fileController = {};
 
+fileController.getFile = async (req, res) => {
+    const file = await File.findById(req.params.id);
+    res.status(200).json(file);
+}
+
 fileController.createFile = async (req, res) => {
     try {
-        console.log(req.file, req.body)
+        // console.log(req.file, req.body)
         if (!req.file) {
             return res.status(400).json({ "message": "No file provided" })
         }
@@ -30,35 +35,75 @@ fileController.createFile = async (req, res) => {
 
             streamifier.createReadStream(req.file.buffer).pipe(stream);
         });
+        let thumbnailUrl = uploadResult.secure_url;
+
+
 
         let fileType = "document";
 
-        if (req.file.mimetype.startsWith("image/")) fileType = "image";
-        else if (req.file.mimetype === "application/pdf") fileType = "pdf";
+        const mime = req.file.mimetype;
+
+
+
+        if (mime.startsWith("image/")) fileType = "image";
+        else if (mime === "application/pdf") fileType = "pdf";
+        else if (mime.startsWith("video/")) fileType = "video";
+        else if (mime.startsWith("audio/")) fileType = "audio";
+        else if (mime.includes("word")) fileType = "docx";
+        else if (mime.startsWith("text/")) fileType = "text";
+        else if (mime.startsWith("text/") || req.file.originalname.endsWith(".srt")
+        ) {
+            fileType = "text";
+        }
 
         let extractedText = "";
-        if(fileType === "image" ) {
-            extractedText = await ocrService.extractText(req.file.buffer);
-        }
-        let aiData = null;
 
+        let aiData = {
+            title: req.file.originalname,
+            description: "",
+            summary: "",
+            tags: [],
+            category: "Other"
+        };
+        // console.log("fileType", fileType)
         if (fileType === "image") {
+            extractedText = await ocrService.extractText(req.file.buffer);
             aiData = await geminiService.describeImage(
                 req.file.buffer,
                 req.file.mimetype
             );
-
-            // console.log(aiData);
         }
 
+        else if (fileType === "pdf") {
+            extractedText = await pdfService.extractText(req.file.buffer);
+            aiData = await geminiService.describeText(extractedText);
+            thumbnailUrl = cloudinary.url(uploadResult.public_id + ".png", {
+                width: 300,
+                crop: "fill",
+                page: 1,
+            });
+        }
+        else if (fileType === "text") {
+            extractedText = req.file.buffer.toString("utf8");
+
+            aiData = await geminiService.describeText(extractedText);
+        }
+        else if (fileType === "docx") {
+
+            extractedText = await docxService.extractText(req.file.buffer);
+
+            aiData = await geminiService.describeText(extractedText);
+        }
+        // console.log("aiData", aiData)
         const textForEmbedding = `
         Titre: ${aiData.title}
         Description: ${aiData.description}
         Tags: ${aiData.tags.join(", ")}
         Category: ${aiData.category}
+        Summary: ${aiData.summary}
         OCR: ${extractedText}
         `
-        console.log(textForEmbedding)
+        // console.log(textForEmbedding)
         const embedding = await embeddingService.generateEmbedding(textForEmbedding);
         const newFile = await File.create({
             user: req.body.user,
@@ -72,14 +117,17 @@ fileController.createFile = async (req, res) => {
             mimeType: req.file.mimetype,
             size: req.file.size,
             aiDescription: aiData.description,
+            summary: aiData.summary,
+            thumbnailUrl,
             embedding,
             extractedText
         });
 
-        console.log(embedding)
+        // console.log(embedding)
         res.status(201).json({ newFile, aiData, embedding });
 
     } catch (err) {
+        console.error(err);
         return res.status(500).json({ "message": "server error", "error": err.message })
     }
 }
@@ -97,7 +145,7 @@ fileController.getFiles = async (req, res) => {
 
     const files = await File.aggregate(
         [
-           {
+            {
                 $vectorSearch: {
                     index: "default",
                     path: "embedding",
@@ -106,7 +154,7 @@ fileController.getFiles = async (req, res) => {
                     limit: 10
                 }
             }
-    ]
+        ]
     )
 
     res.status(200).json(files);
