@@ -19,6 +19,14 @@ import {
   FlaskConical,
   Plane,
   UtensilsCrossed,
+  Sparkles,
+  PaletteIcon,
+  ReceiptCent,
+  UtensilsCrossedIcon,
+  FlaskConicalIcon,
+  PlaneIcon,
+  GraduationCapIcon,
+  Briefcase,
 } from "lucide-react";
 
 // swap this for a real session/user fetch once auth is wired up
@@ -26,20 +34,66 @@ const CURRENT_USER = { name: "Habiba", initial: "H" };
 
 export default function DashboardPage(){
   const [query, setQuery] = useState("");
-  const [stats, setStats] = useState(null);
   const [recentFiles, setRecentFiles] = useState([]);
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const [token, setToken] = useState(null);
+  const [stats, setStats] = useState({});
+  const [collectionFiles, setCollectionFiles] = useState([]);
 
-  useEffect(() => {
-    async function loadDashboard() {
+
+  const loadDashboard = async () => {
       try {
-        const res = await fetch("/api/dashboard");
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/filesByUser/${userId}`);
         if (!res.ok) throw new Error("Failed to load dashboard");
         const data = await res.json();
-        setStats(data.stats);
-        setRecentFiles(data.recentFiles);
-        setCollections(data.collections);
+        console.log(data);
+        let totalFiles = data.length;
+        let newThisWeek = data.filter(file => file.createdAt > (Date.now() - 1000 * 60 * 60 * 24 * 7)).length;
+        let storageUsedGb = (data.reduce((res, item) => res + item.size, 0)/1024/1024/1024).toFixed(2);
+        let collections = [];
+        let collectionCount = data.reduce((res, item) => {
+          if(!collections.includes(item.category)){
+            collections.push(item.category);
+           
+            console.log(collections);
+            res++;
+          }
+           return res;
+        }, 0);
+        const collectionsMap = {};
+
+data.forEach((file) => {
+  if (!collectionsMap[file.category]) {
+    collectionsMap[file.category] = {
+      name: file.category,
+      slug: file.category.toLowerCase().replaceAll(" ", "-"),
+      icon:
+        file.category === "Work" ? <Briefcase className="w-5 h-5 text-gray-600" /> :
+        file.category === "School" ? <GraduationCapIcon className="w-5 h-5 text-pink-600" /> :
+        file.category === "Travel" ? <PlaneIcon className="w-5 h-5 text-sky-600" /> :
+        file.category === "Research" ? <FlaskConicalIcon className="w-5 h-5 text-emerald-600" /> :
+        file.category === "Food" ? <UtensilsCrossedIcon className="w-5 h-5 text-orange-600" /> :
+        file.category === "Invoices" ? <ReceiptCent className="w-5 h-5 text-amber-600" /> :
+        file.category === "Design" ? <PaletteIcon className="w-5 h-5 text-pink-600" /> :
+        file.category === "Programming" ? <Code2 className="w-5 h-5 text-blue-600" /> :
+        <Sparkles className="w-5 h-5 text-violet-600" />,
+      iconBg: "bg-violet-50",
+      fileCount: 1,
+    };
+  } else {
+    collectionsMap[file.category].fileCount++;
+  }
+});
+
+const collectionFiles = Object.values(collectionsMap);
+
+setCollectionFiles(collectionFiles);
+setCollections(Object.keys(collectionsMap));
+         setStats({totalFiles, newThisWeek, storageUsedGb, storageLimitGb: 20, collectionsCount: collectionCount, favoritesCount: 0});
+        setRecentFiles(data);
+        setCollections(collections);
       } catch (err) {
         console.error(err);
         // fallback so the page still looks right during development
@@ -51,9 +105,16 @@ export default function DashboardPage(){
       }
     }
 
+  useEffect(() => {
+   
     loadDashboard();
-  }, []);
-
+  }, [userId, token]);
+console.log('collec', collectionFiles)
+  useEffect(() => {
+    const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+    setUserId(sessionData.userId);
+    setToken(sessionData.token);
+  },[])
   function handleSearchSubmit(e) {
     e.preventDefault();
     if (!query.trim()) return;
@@ -136,7 +197,9 @@ export default function DashboardPage(){
               ? Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="h-36 rounded-xl bg-gray-100 animate-pulse" />
                 ))
-              : recentFiles.map((file) => <FileCard key={file.id} file={file} />)}
+              : recentFiles
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+              .map((file) => <FileCard key={file._id} file={file} />)}
           </div>
         </section>
 
@@ -153,7 +216,7 @@ export default function DashboardPage(){
               ? Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="h-20 rounded-xl bg-gray-100 animate-pulse" />
                 ))
-              : collections.map((c) => <CollectionCard key={c.name} collection={c} />)}
+              : collectionFiles.map((c) => <CollectionCard key={c.name} collection={c} />)}
           </div>
         </section>
       </main>
@@ -183,13 +246,13 @@ function FileCard({ file }) {
 
   return (
     <Link
-      href={`/dashboard/files/${file.id}`}
+      href={`/dashboard/files/${file._id}`}
       className="rounded-xl border border-gray-200 bg-white overflow-hidden hover:shadow-md transition-shadow group"
     >
       <div className="relative h-24 bg-gray-100">
-        {file.thumbnailUrl ? (
+        {file.thumbnailUrl || file.url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={file.thumbnailUrl} alt={file.name} className="w-full h-full object-cover" />
+          <img src={file.thumbnailUrl  || file.url} alt={file.title} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-300">
             <FileText className="w-8 h-8" />
@@ -209,7 +272,7 @@ function FileCard({ file }) {
         )}
       </div>
       <div className="p-2.5">
-        <p className="text-xs font-medium text-gray-900 truncate">{file.name}</p>
+        <p className="text-xs font-medium text-gray-900 truncate">{file.title}</p>
         <p className="text-[11px] text-gray-400 mt-0.5">{file.uploadedAgo}</p>
       </div>
     </Link>

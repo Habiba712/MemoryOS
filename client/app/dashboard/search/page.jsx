@@ -112,7 +112,7 @@ export default function SearchPage() {
         {!loading && (
           <div className="space-y-3">
             {results.map((result) => (
-              <ResultCard key={result.id} result={result} />
+              <ResultCard key={result._id} result={result} />
             ))}
           </div>
         )}
@@ -157,7 +157,7 @@ function ResultCard({ result }) {
           {result.fileType} · Uploaded {result.updatedAt}
         </p>
         <p className="text-xs text-gray-400 mt-1.5 truncate">
-          Matched because: 
+          {/* Matched because:  */}
         </p>
       </div>
     </Link>

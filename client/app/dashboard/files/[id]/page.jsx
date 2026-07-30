@@ -36,7 +36,7 @@ console.log('file', file)
       <div className="rounded-xl overflow-hidden bg-gray-900 h-56 mb-4 relative">
         {file.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={file.thumbnailUrl} alt={file.name} className="w-full h-full object-cover" />
+          <img src={file.thumbnailUrl} alt={file.name} className="w-full h-full object-cover aspect-square" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
             No preview available
