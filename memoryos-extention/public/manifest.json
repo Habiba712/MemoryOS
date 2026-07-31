@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "MemoryOS",
+  "version": "1.0.0",
+
+  "action": {
+    "default_popup": "index.html"
+  },
+
+"permissions": [
+  "storage",
+  "activeTab",
+  "tabs"
+],
+
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

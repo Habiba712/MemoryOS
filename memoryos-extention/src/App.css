@@ -1,0 +1,368 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap');
+
+.app {
+  width:100%;
+  min-height: 100vh;
+  /* border: 3px solid white; */
+  user-select: none;
+  font-family: Tahoma, sans-serif;
+}
+
+.pixel-font {
+  font-family: 'Press Start 2P', monospace;
+}
+
+.mono-font {
+  font-family: 'VT323', monospace;
+}
+
+.bevel-out {
+  box-shadow: inset 1px 1px 0 #ffffffcc, inset -1px -1px 0 #7a5a75, 0 2px 0 #d98fb3;
+}
+
+.bevel-in {
+  box-shadow: inset -1px -1px 0 #ffffffcc, inset 1px 1px 0 #7a5a75;
+}
+
+.bevel-out:active {
+  box-shadow: none;
+}
+
+/* ---- window frame ---- */
+
+.window {
+  border: 2px solid #8a6a86;
+  background: #CFEFE0;
+  overflow: hidden;
+  border-radius: 2px;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: linear-gradient(90deg, #FF8FBB, #CFEFE0);
+  border-bottom: 2px solid #8a6a86;
+}
+
+.title-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+
+.title-text {
+  font-size: 9px;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(122, 90, 117, 0.6);
+}
+
+.title-controls {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.win-btn {
+  width: 16px;
+  height: 16px;
+  background: #FFF7EE;
+  border: none;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: #3B2A39;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+/* ---- menu bar ---- */
+
+.menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 10px;
+  background: #E7FBF1;
+  border-bottom: 1px solid #B7DECF;
+  font-size: 15px;
+  color: #5a4256;
+}
+
+.menu-bar span:nth-child(3) {
+  text-decoration: underline dotted;
+}
+
+/* ---- body ---- */
+
+.body {
+  padding: 12px 12px 8px;
+  background: #E7FBF1;
+}
+
+.prompt-text {
+  font-size: 16px;
+  color: #5a4256;
+  margin: 0 0 10px;
+}
+
+/* ---- tab preview card ---- */
+
+.tab-card {
+  background: #FFF7EE;
+  border-radius: 3px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+.tab-card-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.favicon-box {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 2px solid #8a6a86;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.favicon-box img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.favicon-fallback {
+  color: #FF6FA0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tab-info {
+  min-width: 0;
+}
+
+.tab-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #3B2A39;
+  margin: 0;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.tab-host {
+  font-size: 14px;
+  color: #9C7A96;
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loading-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.loading-box {
+  width: 36px;
+  height: 36px;
+  background: #F3E6EE;
+  border: 2px solid #8a6a86;
+  border-radius: 3px;
+  animation: blink 1s steps(1) infinite;
+}
+
+.loading-text {
+  font-size: 15px;
+  color: #9C7A96;
+  margin: 0;
+}
+
+/* ---- heart progress ---- */
+
+.progress-card {
+  background: #FFF7EE;
+  border-radius: 3px;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+.progress-label {
+  font-size: 14px;
+  color: #9C7A96;
+  margin: 0 0 4px;
+}
+
+.hearts-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.heart {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.heart.filled {
+  animation: heartPop 0.28s ease-out both;
+}
+
+.progress-percent {
+  font-size: 14px;
+  color: #9C7A96;
+  margin-left: auto;
+}
+
+/* ---- status cards ---- */
+
+.status-card {
+  border-radius: 3px;
+  padding: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-card.success {
+  background: #FFF7EE;
+}
+
+.status-card.error {
+  background: #FFF0F0;
+}
+
+.status-card .icon {
+  font-size: 16px;
+}
+
+.status-card .icon.pop {
+  animation: heartPop 0.28s ease-out both;
+}
+
+.status-card p {
+  font-size: 16px;
+  margin: 0;
+}
+
+.status-card.success p {
+  color: #3B2A39;
+}
+
+.status-card.error p {
+  color: #7a2b2b;
+}
+
+/* ---- save button ---- */
+
+.save-btn {
+  width: 100%;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #FFC2DD, #FF8FBB);
+  border: 2px solid #8a6a86;
+  font-size: 10px;
+  color: #3B2A39;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.spinner {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(59, 42, 57, 0.3);
+  border-top-color: #3B2A39;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ---- taskbar ---- */
+
+.taskbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: linear-gradient(90deg, #CFEFE0, #FF8FBB);
+  border-top: 2px solid #8a6a86;
+}
+
+.open-os-btn {
+  padding: 3px 8px;
+  border-radius: 2px;
+  background: #FFF7EE;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.open-os-btn span:first-child {
+  font-size: 11px;
+}
+
+.open-os-btn span:last-child {
+  font-size: 8px;
+  color: #3B2A39;
+}
+
+.clock {
+  font-size: 15px;
+  color: #fff;
+  text-shadow: 1px 1px 0 rgba(122, 90, 117, 0.6);
+}
+
+/* ---- animations ---- */
+
+@keyframes heartPop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes blink {
+  50% { opacity: 0.35; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

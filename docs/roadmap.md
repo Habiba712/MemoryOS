@@ -2,12 +2,12 @@
 
 - [x] Project planning
 - [x] Git repository setup
-- [ ] Backend setup
+- [x] Backend setup
 - [x] Authentication
-- [ ] File uploads
-- [ ] AI processing
-- [ ] Search
-- [ ] Dashboard
+- [x] File uploads
+- [x] AI processing
+- [x] Search
+- [x] Dashboard
 - [ ] Deployment
 
 
