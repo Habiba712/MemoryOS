@@ -5,6 +5,7 @@ const health = require('../controllers/health.controller');
 const authRoutes = require('./user/auth.routes');
 const userRoutes = require('./user/user.routes');
 const fileRoutes = require('./file.routes');
+const urlRoutes = require('./url.routes');
 // const authMiddleware = require('../middlewares/auth.middleware');
 
 
@@ -13,6 +14,7 @@ router.get('/health', health.ping);
 router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 router.use('/file', fileRoutes);
+router.use('/url', urlRoutes);
 
 //protected routes
 

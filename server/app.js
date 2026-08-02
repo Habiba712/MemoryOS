@@ -7,7 +7,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors({
-  origin: ["https://ecbi.vercel.app", "http://localhost:3000"],
+  origin: ["https://ecbi.vercel.app", "http://localhost:3000", "http://localhost:5173"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization",
     "Access-Control-Allow-Origin",
@@ -27,7 +27,7 @@ app.get('/ping', (req, res) => res.json({ ok: true }));
 
 
 
-// app.use(cors());
+app.use(cors());
 app.use(helmet());
 app.use(morgan('dev'));
 

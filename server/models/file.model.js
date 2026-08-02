@@ -37,6 +37,12 @@ const fileSchema = new mongoose.Schema(
       enum: ["image", "pdf", "document"],
       required: true,
     },
+    sourceType: {
+  type: String,
+  enum: ["file", "url"],
+  default: "file",
+  required: true,
+},
     title: {
         type: String,
         required: false

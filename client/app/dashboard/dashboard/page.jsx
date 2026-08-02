@@ -41,6 +41,7 @@ export default function DashboardPage(){
   const [token, setToken] = useState(null);
   const [stats, setStats] = useState({});
   const [collectionFiles, setCollectionFiles] = useState([]);
+  const [urls, setUrls] = useState([]);
 
 
   const loadDashboard = async () => {
