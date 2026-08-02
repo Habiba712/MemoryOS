@@ -46,15 +46,31 @@ export default function DashboardPage(){
 
   const loadDashboard = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/filesByUser/${userId}`);
-        if (!res.ok) throw new Error("Failed to load dashboard");
-        const data = await res.json();
+        const res01 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/filesByUser/${userId}`);
+        if (!res01.ok) throw new Error("Failed to load dashboard");
+        const data = await res01.json();
         console.log(data);
-        let totalFiles = data.length;
+
+        const res02 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/url/getUrlsByUser/${userId}`);
+        if (!res02.ok) throw new Error("Failed to load dashboard");
+        const data02 = await res02.json();
+        console.log(data02);
+
+        let totalFiles = data.length + data02.urls.length;
         let newThisWeek = data.filter(file => file.createdAt > (Date.now() - 1000 * 60 * 60 * 24 * 7)).length;
-        let storageUsedGb = (data.reduce((res, item) => res + item.size, 0)/1024/1024/1024).toFixed(2);
+        let storageUsedGb = ((data.reduce((res, item) => res + item.size, 0)/1024/1024/1024) + (data02.urls.reduce((res, item) => res + item.contentSize, 0)/1024/1024/1024)).toFixed(2);
         let collections = [];
         let collectionCount = data.reduce((res, item) => {
+          if(!collections.includes(item.category)){
+            collections.push(item.category);
+           
+            console.log(collections);
+            res++;
+          }
+           return res;
+        }, 0);
+
+        collectionCount = collectionCount + data02.urls.reduce((res, item) => {
           if(!collections.includes(item.category)){
             collections.push(item.category);
            
@@ -86,6 +102,33 @@ data.forEach((file) => {
   } else {
     collectionsMap[file.category].fileCount++;
   }
+
+
+});
+
+data02.urls.forEach((url) => {
+  console.log('irl', url)
+  if (!collectionsMap[url.category]) {
+    collectionsMap[url.category] = {
+      name: url.category,
+      slug: url.category.toLowerCase().replaceAll(" ", "-"),
+      icon:
+        url.category === "Work" ? <Briefcase className="w-5 h-5 text-gray-600" /> :
+        url.category === "School" ? <GraduationCapIcon className="w-5 h-5 text-pink-600" /> :
+        url.category === "Travel" ? <PlaneIcon className="w-5 h-5 text-sky-600" /> :
+        url.category === "Research" ? <FlaskConicalIcon className="w-5 h-5 text-emerald-600" /> :
+        url.category === "Food" ? <UtensilsCrossedIcon className="w-5 h-5 text-orange-600" /> :
+        url.category === "Invoices" ? <Receipt className="w-5 h-5 text-amber-600" /> :
+        url.category === "Design" ? <PaletteIcon className="w-5 h-5 text-pink-600" /> :
+        url.category === "Programming" ? <Code2 className="w-5 h-5 text-blue-600" /> :
+        <Sparkles className="w-5 h-5 text-violet-600" />,
+      iconBg: "bg-violet-50",
+      fileCount: 1,
+    };
+  } else {
+    collectionsMap[url.category].fileCount++;
+  }
+
 });
 
 const collectionFiles = Object.values(collectionsMap);
@@ -93,7 +136,8 @@ const collectionFiles = Object.values(collectionsMap);
 setCollectionFiles(collectionFiles);
 setCollections(Object.keys(collectionsMap));
          setStats({totalFiles, newThisWeek, storageUsedGb, storageLimitGb: 20, collectionsCount: collectionCount, favoritesCount: 0});
-        setRecentFiles(data);
+        // setRecentFiles(data);
+        setRecentFiles([...data, ...data02.urls]);
         setCollections(collections);
       } catch (err) {
         console.error(err);
@@ -106,9 +150,22 @@ setCollections(Object.keys(collectionsMap));
       }
     }
 
+  const getUrls = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/url/getUrlsByUser/${userId}`);
+      if (!res.ok) throw new Error("Failed to load files");
+      const data = await res.json();
+      console.log('urls', data.urls);
+       setUrls(data);
+    } catch (err) {
+      console.error(err);
+    } 
+  }
+
   useEffect(() => {
    
     loadDashboard();
+    // getUrls();
   }, [userId, token]);
 console.log('collec', collectionFiles)
   useEffect(() => {
@@ -121,6 +178,7 @@ console.log('collec', collectionFiles)
     if (!query.trim()) return;
     window.location.href = `/dashboard/search?q=${encodeURIComponent(query)}`;
   }
+  console.log('dataä', recentFiles)
 
   return (
     <div className="flex min-h-screen bg-gray-50 w-full">

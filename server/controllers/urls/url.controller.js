@@ -88,6 +88,7 @@ urlController.saveUrl = async (req, res) => {
             tags: aiData.tags || [],
 
             category: aiData.category || "Other",
+            contentSize: Buffer.byteLength(extractedText, "utf8"),
 
             embedding: embedding,
             thumbnailUrl: `https://www.google.com/s2/favicons?domain=${url}`,
@@ -111,11 +112,25 @@ urlController.saveUrl = async (req, res) => {
 };
 urlController.getUrlsByUser = async (req, res) => {
     try {
-        const { user } = req.params;
-        const urls = await Url.find({ user });
+        const { userId } = req.params;
+        const urls = await Url.find({ user: userId });
         res.status(200).json({ urls });
     } catch (err) {
         console.error("getUrlsByUser error:", err);
+        res.status(500).json({
+            message: "Server error",
+            error: err.message
+        });
+    }
+};
+
+urlController.getUrl = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const url = await Url.findById(id);
+        res.status(200).json(url);
+    } catch (err) {
+        console.error("getUrl error:", err);
         res.status(500).json({
             message: "Server error",
             error: err.message

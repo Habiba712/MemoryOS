@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronLeft, Star, Play } from "lucide-react";
 import {useParams} from "next/navigation";
+import Image from "next/image";
 
 const TABS = ["Overview", "Extracted Text", "Metadata"];
 
@@ -15,16 +16,32 @@ export default function FileDetailView() {
   const [file, setFile] = useState(null);
   const getFile = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/getFile/${id}`);
-    if (!res.ok) throw new Error("Failed to load file");
-    const data = await res.json();
-    setFile(normalizeFile(data));
+    console.log('res', res)
+    if (res.ok) {
+      const data = await res.json();
+      if(data === null){
+        const res02 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/url/getUrl/${id}`);
+        if (res02.ok) {
+          const data02 = await res02.json();
+          setFile(normalizeFile(data02));
+        }
+        else{
+          setFile(null);
+        }
+      }
+      else{
+              setFile(normalizeFile(data));
+
+      }
+    }
+ 
   }
   useEffect(() => {
     getFile();
   }, [id]);
+  console.log('file', file)
 
-console.log('file', file)
-  if (!file) return null;
+   if (!file) return null;
 
   return (
     <div className="max-w-2xl w-full bg-white px-4 py-8 mx-auto rounded-xl">
@@ -36,7 +53,7 @@ console.log('file', file)
       <div className="rounded-xl overflow-hidden bg-gray-900 h-56 mb-4 relative">
         {file.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={file.thumbnailUrl} alt={file.name} className="w-full h-full object-cover aspect-square" />
+          <Image src={file.thumbnailUrl} alt={file.name} className="w-full h-full object-cover aspect-square" width={300} height={300} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
             No preview available

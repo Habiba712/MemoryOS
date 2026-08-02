@@ -25,6 +25,11 @@ const urlSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+     contentSize: {
+      type: Number, // bytes
+      required: true,
+      default: 0,
+    },
 
     thumbnailUrl: {
       type: String,

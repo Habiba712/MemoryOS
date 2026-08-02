@@ -7,5 +7,7 @@ const multer = require("multer");
 
 
 router.post('/saveUrl', urlController.saveUrl);
+router.get('/getUrlsByUser/:userId', urlController.getUrlsByUser);
+router.get('/getUrl/:id', urlController.getUrl);
 
 module.exports = router;

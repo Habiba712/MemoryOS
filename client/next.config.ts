@@ -1,7 +1,61 @@
-import type { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+     
+ 
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+      
+      },
 
-const nextConfig: NextConfig = {
-  /* config options here */
+     
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.vecteezy.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'wwww.shutterstock.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+       {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'unsplash.com'
+      }
+      ,{
+        protocol: 'https',
+        hostname: 'tableo.com'
+      },
+       {
+        protocol: 'https',
+        hostname: 'images.pexels.com'
+      }
+  ,
+      {
+        protocol: 'https',
+        hostname: 'heroicons.com'
+      }
+    ],
+  },
+
 };
 
 export default nextConfig;
