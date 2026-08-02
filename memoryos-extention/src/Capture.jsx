@@ -8,12 +8,25 @@ export default function Capture({ token,userId, onLogout }) {
   const [status, setStatus] = useState(STATUS.idle);
   const [progress, setProgress] = useState(0);
   const [tags, setTags] = useState([]);
-
+const [screenshot, setScreenshot] = useState(null);
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       setTab(tabs[0]);
     });
   }, [token]);
+
+  useEffect(() => {
+    getScreenshot();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },  [tab]);
+  const getScreenshot = async  () => {
+   const screenshot = await chrome.tabs.captureVisibleTab(null, {
+    format: "jpeg",
+    quality: 70
+})
+ 
+setScreenshot(screenshot);
+  }
 
   async function handleSave() {
     if (!tab || status === "thinking") return;
@@ -24,13 +37,13 @@ export default function Capture({ token,userId, onLogout }) {
     const tick = setInterval(() => {
       setProgress((p) => Math.min(p + Math.random() * 20, 92));
     }, 160);
-
+console.log('screen', screenshot)
     try {
       // TODO: point this at your real endpoint once it's ready — should return AI-generated tags for the page
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/url/saveUrl`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title: tab.title, url: tab.url, user: userId}),
+        body: JSON.stringify({ title: tab.title, url: tab.url, user: userId, screenshot: screenshot }),
       });
       if (!res.ok) throw new Error("Save failed");
       const data = await res.json();

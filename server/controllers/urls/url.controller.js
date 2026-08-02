@@ -1,3 +1,7 @@
+
+const mongoose = require("mongoose");
+const cloudinary = require("../../config/cloudinary");
+const streamifier = require("streamifier");
 const fetch = require("node-fetch");
 const cheerio = require("cheerio");
 const axios = require("axios");
@@ -13,8 +17,32 @@ urlController.saveUrl = async (req, res) => {
     console.log("saveUrl", req.headers.authorization);
     try {
 
-        const { title, url, user } = req.body;
+        const { title, url, user, screenshot } = req.body;
+        console.log("screenshot", screenshot)
 
+        const uploadResult = await new Promise((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                        { resource_type: "auto" },
+                        (error, result) => {
+                            if (error) reject(error);
+                            else resolve(result);
+                        }
+                    );
+        
+                    streamifier.createReadStream(screenshot).pipe(stream);
+                });
+                let thumbnailUrl = cloudinary.url(uploadResult.public_id, {
+                    transformation: [
+                        {
+                            width: 600,
+                            height: 600,
+                            crop: "fill",
+                            quality: "auto",
+                            fetch_format: "auto",
+                        },
+                    ],
+                    secure: true,
+                });
         if (!url) {
             return res.status(400).json({
                 message: "URL is required"
@@ -91,7 +119,8 @@ urlController.saveUrl = async (req, res) => {
             contentSize: Buffer.byteLength(extractedText, "utf8"),
 
             embedding: embedding,
-            thumbnailUrl: `https://www.google.com/s2/favicons?domain=${url}`,
+            thumbnailUrl,
+            faviconUrl: `https://www.google.com/s2/favicons?domain=${url}&sz=128`
 
         });
 

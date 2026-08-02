@@ -26,7 +26,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'wwww.shutterstock.com',
+        hostname: 'www.shutterstock.com',
       },
       {
         protocol: 'https',
@@ -51,7 +51,8 @@ const nextConfig = {
   ,
       {
         protocol: 'https',
-        hostname: 'heroicons.com'
+        hostname: 'www.google.com',
+        
       }
     ],
   },

@@ -35,7 +35,18 @@ fileController.createFile = async (req, res) => {
 
             streamifier.createReadStream(req.file.buffer).pipe(stream);
         });
-        let thumbnailUrl = uploadResult.secure_url;
+        let thumbnailUrl = cloudinary.url(uploadResult.public_id, {
+            transformation: [
+                {
+                    width: 600,
+                    height: 600,
+                    crop: "fill",
+                    quality: "auto",
+                    fetch_format: "auto",
+                },
+            ],
+            secure: true,
+        });
 
 
 
