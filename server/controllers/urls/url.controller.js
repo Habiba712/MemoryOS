@@ -71,7 +71,7 @@ urlController.saveUrl = async (req, res) => {
         $("style").remove();
         $("noscript").remove();
 
-        const extractedText = $("body")
+        const extractedText = $("screenshot")
             .text()
             .replace(/\s+/g, " ")
             .trim();
