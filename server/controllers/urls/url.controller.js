@@ -18,7 +18,19 @@ urlController.saveUrl = async (req, res) => {
     try {
 
         const { title, url, user, screenshot } = req.body;
-        console.log("screenshot", screenshot)
+
+        if(!screenshot){
+            return res.status(400).json({
+                message: "Screenshot is required"
+            });
+        }
+        else{
+            const base64Data= screenshot.replace(/^data:image\/\w+;base64,/, "");
+
+        }
+
+        const screenshotBuffer = Buffer.from(base64Data, "base64");
+
 
         const uploadResult = await new Promise((resolve, reject) => {
                     const stream = cloudinary.uploader.upload_stream(
@@ -29,7 +41,7 @@ urlController.saveUrl = async (req, res) => {
                         }
                     );
         
-                    streamifier.createReadStream(screenshot).pipe(stream);
+                    streamifier.createReadStream(screenshotBuffer).pipe(stream);
                 });
                 let thumbnailUrl = cloudinary.url(uploadResult.public_id, {
                     transformation: [
@@ -71,14 +83,14 @@ urlController.saveUrl = async (req, res) => {
         $("style").remove();
         $("noscript").remove();
 
-        const extractedText = $("screenshot")
+        const extractedText = $("screenshotBuffer")
             .text()
             .replace(/\s+/g, " ")
             .trim();
 
         console.log("Extracted text length:", extractedText.length);
 
-        const aiData = await geminiService.describeText(extractedText);
+        const aiData = await geminiService.describeImage(extractedText);
 
         console.log("AI data:", aiData);
 
