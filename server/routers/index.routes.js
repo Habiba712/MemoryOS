@@ -6,6 +6,7 @@ const authRoutes = require('./user/auth.routes');
 const userRoutes = require('./user/user.routes');
 const fileRoutes = require('./file.routes');
 const urlRoutes = require('./url.routes');
+const videoRoutes = require('./video.routes');
 // const authMiddleware = require('../middlewares/auth.middleware');
 
 
@@ -15,6 +16,7 @@ router.use('/auth', authRoutes);
 router.use('/user', userRoutes);
 router.use('/file', fileRoutes);
 router.use('/url', urlRoutes);
+router.use('/video', videoRoutes);
 
 //protected routes
 

@@ -9,25 +9,28 @@ const axios = require("axios");
 const Url = require("../../models/url.model");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
+const ocrService = require("../../services/ocr.service");
 
 const urlController = {};
 
 urlController.saveUrl = async (req, res) => {
     console.log("saveUrl", req.body);
     console.log("saveUrl", req.headers.authorization);
+
     try {
 
         const { title, url, user, screenshot } = req.body;
+        
 
         if(!screenshot){
             return res.status(400).json({
                 message: "Screenshot is required"
             });
         }
-        else{
+        
             const base64Data= screenshot.replace(/^data:image\/\w+;base64,/, "");
 
-        }
+        
 
         const screenshotBuffer = Buffer.from(base64Data, "base64");
 
@@ -83,14 +86,11 @@ urlController.saveUrl = async (req, res) => {
         $("style").remove();
         $("noscript").remove();
 
-        const extractedText = $("screenshotBuffer")
-            .text()
-            .replace(/\s+/g, " ")
-            .trim();
+        const extractedText =  await ocrService.extractText(screenshotBuffer);
 
         console.log("Extracted text length:", extractedText.length);
 
-        const aiData = await geminiService.describeImage(extractedText);
+        const aiData = await geminiService.describeImage(screenshotBuffer, "image/png");
 
         console.log("AI data:", aiData);
 

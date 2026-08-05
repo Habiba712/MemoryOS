@@ -115,7 +115,6 @@ const fileSchema = new mongoose.Schema(
   }
 );
 
-// Speeds up text-based fallback search (in addition to vector search)
-fileSchema.index({ extractedText: "text", summary: "text", tags: "text" });
+ fileSchema.index({ extractedText: "text", summary: "text", tags: "text" });
 
 module.exports = mongoose.model("File", fileSchema);
