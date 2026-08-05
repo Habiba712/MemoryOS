@@ -3,6 +3,7 @@ const Video = require("../../models/video.model");
 const youtubeService = require("../../services/youtube.service");
 const videoService = require("../../services/video.service");
 const geminiService = require("../../services/gemini.service");
+const embeddingService = require("../../services/embedding.service");
 
 
 const videoController = {};
@@ -38,6 +39,8 @@ let aiData= {
     category: "Other"
 }
 
+
+
 if( screenshotBuffer) {
     try{
         aiData = await geminiService.describeImage(
@@ -58,22 +61,36 @@ if (platform === "youtube") {
         console.log("No transcript available. Continuing video processing.");
     }
 }
+const textForEmbedding = `
+Title: ${aiData.title || title || ""}
+Description: ${aiData.description || ""}
+Summary: ${aiData.summary || ""}
+Tags: ${(aiData.tags || []).join(", ")}
+Category: ${aiData.category || ""}
+Transcript: ${transcript || ""}
+`;
+
+const embedding = await embeddingService.generateEmbedding(
+    textForEmbedding
+);
+
+console.log("Video embedding length:", embedding.length);
 
 console.log("Transcript length:", transcript.length);
 
        const newVideo = await Video.create({
             user: user,
-            title: title || "",
+            title: aiData.title || "",
             videoUrl,
             thumbnailUrl: thumbnailUrl || "",
             duration: duration || 0,
             platform: platform || "unknown",
-            transcript,
-            aiDescription: "",
-            summary: "",
-            tags: [],
+            transcript: transcript || "" ,
+            aiDescription: aiData.description || "",
+            summary: aiData.summary || "",
+            tags: aiData.tags || [],
             category: "Other",
-            embedding: []
+            embedding,
         });
 
         res.status(201).json({
