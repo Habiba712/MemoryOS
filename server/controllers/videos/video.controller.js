@@ -10,7 +10,7 @@ const videoController = {};
 
 videoController.saveVideo = async (req, res) => {
     try {
-        const { user, title, videoUrl, thumbnailUrl, duration, platform } = req.body;
+        const { user, videoUrl} = req.body;
 
         if (!user) {
             return res.status(400).json({ "Message": "User is required" });
@@ -18,6 +18,9 @@ videoController.saveVideo = async (req, res) => {
         if (!videoUrl) {
             return res.status(400).json({ "Message": "videoUrl is required" });
         }
+
+        const videoMetaData = await videoService.getVideoMetadata(videoUrl);
+        const { platform, duration, thumbnailUrl, title } = videoMetaData;
 
         let videoBuffer = null;
 
@@ -36,18 +39,17 @@ videoController.saveVideo = async (req, res) => {
             category: "Other"
         };
 
-       if (videoBuffer) {
-    try {
-        aiData = await geminiService.describeVideo(
-            videoBuffer,
-            "video/mp4"
-        );
-    } catch (err) {
-        console.log("No video description available:", err.message);
-    }
-}
-        // ...rest stays exactly the same (transcript, embedding, Video.create, etc.)
-
+        if (videoBuffer) {
+            try {
+                aiData = await geminiService.describeVideo(
+                    videoBuffer,
+                    "video/mp4"
+                );
+            } catch (err) {
+                console.log("No video description available:", err.message);
+            }
+        }
+ 
         let transcript = "";
 
         if (platform === "youtube") {
@@ -95,9 +97,9 @@ videoController.saveVideo = async (req, res) => {
         });
 
 
-    }  catch (err) {
-    console.log("No video description available:", err.message); // add the err.message part
-    res.status(500).json({ message: "Error saving video", error: err.message });
+    } catch (err) {
+        console.log("No video description available:", err.message); // add the err.message part
+        res.status(500).json({ message: "Error saving video", error: err.message });
     }
 }
 

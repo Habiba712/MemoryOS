@@ -7,9 +7,21 @@ const fs = require("fs/promises");
 const os = require("os");
 const path = require("path");
 
-const ytDlpWrap = new YTDlpWrap(); // auto-locates/downloads the yt-dlp binary
+const ytDlpWrap = new YTDlpWrap(); 
 
 const videoService = {};
+
+videoService.getVideoMetadata = async (videoUrl) => {
+    const { stdout } = await execFileAsync("yt-dlp", ["-j", videoUrl]);
+    const meta = JSON.parse(stdout);
+
+    return {
+        platform: meta.extractor_key || meta.extractor || "unknown", // e.g. "Pinterest", "Youtube"
+        duration: meta.duration || 0,          // in seconds
+        thumbnailUrl: meta.thumbnail || "",
+        title: meta.title || ""
+    };
+};
 
 videoService.captureVideoFrame = async (videoUrl, maxFrames = 4) => {
     const dir = os.tmpdir();
@@ -20,7 +32,7 @@ videoService.captureVideoFrame = async (videoUrl, maxFrames = 4) => {
         const { stdout } = await execFileAsync("yt-dlp", ["-f", "bv", "-g", videoUrl]);
         const directUrl = stdout.trim().split("\n")[0];
 
-        // one frame every ~3 seconds, capped at maxFrames
+      
         await execFileAsync(ffmpegPath, [
             "-y",
             "-i", directUrl,
@@ -37,10 +49,10 @@ videoService.captureVideoFrame = async (videoUrl, maxFrames = 4) => {
                 buffers.push(await fs.readFile(framePath));
                 await fs.unlink(framePath).catch(() => {});
             } catch {
-                break; // fewer frames existed than maxFrames, that's fine for short clips
+                break; 
             }
         }
-        return buffers; // array instead of a single buffer
+        return buffers;  
     } catch (err) {
         throw err;
     }
@@ -50,13 +62,16 @@ videoService.downloadVideoClip = async (videoUrl, maxDurationSeconds = 15) => {
     const outputPath = path.join(os.tmpdir(), `clip-${Date.now()}.mp4`);
 
     try {
-        const { stdout } = await execFileAsync("yt-dlp", ["-f", "bv+ba/best", "-g", videoUrl]);
+        const { stdout } = await execFileAsync(
+            "yt-dlp",
+             ["-f", "bv+ba/best", "-g", videoUrl]
+            );
         const urls = stdout.trim().split("\n"); // could be [video, audio] or just [combined]
 
         const ffmpegArgs = ["-y"];
         urls.forEach(u => ffmpegArgs.push("-i", u));
         ffmpegArgs.push(
-            "-t", String(maxDurationSeconds), // cap length so we never send a huge file to Gemini
+            "-t", String(maxDurationSeconds), 
             "-c:v", "libx264",
             "-c:a", "aac",
             "-movflags", "faststart",

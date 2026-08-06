@@ -19,30 +19,30 @@ geminiService.describeImage = async (imageBuffer, mimeType) => {
             },
             {
                 text: `
-Analyze this image.
+                    Analyze this image.
 
-Return ONLY valid JSON.
+                    Return ONLY valid JSON.
 
-{
-  "title": "",
-  "description": "",
-  "tags": [],
-  "category": "",
-  "summary": ""
-}
+                    {
+                    "title": "",
+                    "description": "",
+                    "tags": [],
+                    "category": "",
+                    "summary": ""
+                    }
 
-Rules:
-- title: maximum 6 words.
-- description: 1-2 sentences.
-- tags: 5-10 relevant keywords.
-- summary: 1-2 sentences summarizing the image.
-- category: choose ONE from:
-Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
+                    Rules:
+                    - title: maximum 6 words.
+                    - description: 1-2 sentences.
+                    - tags: 5-10 relevant keywords.
+                    - summary: 1-2 sentences summarizing the image.
+                    - category: choose ONE from:
+                    Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
 
-Do not include markdown.
-Do not wrap the JSON in \`\`\`.
-Return ONLY valid JSON.
-`
+                    Do not include markdown.
+                    Do not wrap the JSON in \`\`\`.
+                    Return ONLY valid JSON.
+                    `
             }
         ]
     });
@@ -61,30 +61,30 @@ geminiService.describeText = async (text) => {
     const response = await ai.models.generateContent({
         model: "gemini-flash-latest",
         contents: `
-Analyze the following document.
+                Analyze the following document.
 
-Return ONLY valid JSON.
+                Return ONLY valid JSON.
 
-{
-  "title": "",
-  "description": "",
-  "tags": [],
-  "category": "",
-  "summary": ""
-}
+                {
+                "title": "",
+                "description": "",
+                "tags": [],
+                "category": "",
+                "summary": ""
+                }
 
-Rules:
-- title: maximum 6 words.
-- description: 1-2 sentences summarizing the document.
-- tags: 5-10 relevant keywords.
-- summary: 1-2 sentences summarizing the document.
-- category: choose ONE from:
-Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
+                Rules:
+                - title: maximum 6 words1.
+                - description: 1-2 sentences summarizing the document.
+                - tags: 5-10 relevant keywords.
+                - summary: 1-2 sentences summarizing the document.
+                - category: choose ONE from:
+                Programming, Design, Travel, Food, Fitness, Work, Finance, Education, Research, Shopping, Other.
 
-Document:
+                Document:
 
-${text.slice(0, 12000)}
-`
+                ${text.slice(0, 12000)}
+                `
     });
 
     const cleaned = response.text
@@ -97,35 +97,37 @@ ${text.slice(0, 12000)}
 
 
 geminiService.describeVideo = async (videoBuffer, mimeType = "video/mp4") => {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
     const prompt = `
-Watch this video and respond with ONLY valid JSON, no markdown, no code fences, in this exact shape:
-{
-  "title": "short descriptive title",
-  "description": "1-2 sentence description of what happens in the video",
-  "summary": "a slightly longer summary, 2-3 sentences",
-  "tags": ["tag1", "tag2", "tag3"],
-  "category": "one of: Tutorial, Entertainment, Cooking, Fitness, Tech, Other"
-}
-`;
+                Watch this video and respond with ONLY valid JSON, no markdown, no code fences, in this exact shape:
+                {
+                "title": "short descriptive title",
+                "description": "1-2 sentence description of what happens in the video",
+                "summary": "a slightly longer summary, 2-3 sentences",
+                "tags": ["tag1", "tag2", "tag3"],
+                "category": "one of: Tutorial, Entertainment, Cooking, Fitness, Tech, Gym, Cooking, Health, Entertainment, Other"
+                }
+                `;
 
-    const result = await model.generateContent([
-        {
-            inlineData: {
-                data: videoBuffer.toString("base64"),
-                mimeType
+    const response = await ai.models.generateContent({
+        model: "gemini-flash-latest",
+        contents: [
+            {
+                role: "user",
+                parts: [
+                    { inlineData: { mimeType, data: videoBuffer.toString("base64") } },
+                    { text: prompt }
+                ]
             }
-        },
-        prompt
-    ]);
+        ]
+    });
 
-    const text = result.response.text().trim();
-    const cleaned = text.replace(/```json|```/g, "").trim();
+    const cleaned = response.text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
     return JSON.parse(cleaned);
 };
-
 
 
 module.exports = geminiService;
