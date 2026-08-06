@@ -8,88 +8,84 @@ const embeddingService = require("../../services/embedding.service");
 
 const videoController = {};
 
-videoController.saveVideo = async (req, res) =>{
-    try{
+videoController.saveVideo = async (req, res) => {
+    try {
+        const { user, title, videoUrl, thumbnailUrl, duration, platform } = req.body;
 
-        const {user, title, videoUrl, thumbnailUrl, duration, platform} = req.body;
-
-        if(!user){
-            return res.status(400).json({"Message": "User is required"});
-
-
+        if (!user) {
+            return res.status(400).json({ "Message": "User is required" });
         }
-        if(!videoUrl){
-            return res.status(400).json({"Message": "videoUrl is required"});
+        if (!videoUrl) {
+            return res.status(400).json({ "Message": "videoUrl is required" });
         }
-        let screenshotBuffer = null;
 
-try {
-    screenshotBuffer = await videoService.captureVideoFrame(videoUrl);
-    console.log("Video frame captured:", screenshotBuffer.length);
-} catch (err) {
-    console.error("Could not capture video frame:", err.message);
-}
+        let videoBuffer = null;
 
-let aiData= {
+        try {
+            videoBuffer = await videoService.downloadVideoClip(videoUrl);
+            console.log("Video clip downloaded:", videoBuffer.length);
+        } catch (err) {
+            console.error("Could not download video clip:", err.message);
+        }
 
-    title: title || "",
-    aiDescription: "",
-    summary: "",
-    tags: [],
-    category: "Other"
-}
+        let aiData = {
+            title: title || "",
+            description: "",
+            summary: "",
+            tags: [],
+            category: "Other"
+        };
 
-
-
-if( screenshotBuffer) {
-    try{
-        aiData = await geminiService.describeImage(
-            screenshotBuffer,
-            "image/png"
+       if (videoBuffer) {
+    try {
+        aiData = await geminiService.describeVideo(
+            videoBuffer,
+            "video/mp4"
         );
-    }catch(err){
-        console.log("No image description available. Continuing video processing.");
+    } catch (err) {
+        console.log("No video description available:", err.message);
     }
 }
-  
+        // ...rest stays exactly the same (transcript, embedding, Video.create, etc.)
+
         let transcript = "";
 
-if (platform === "youtube") {
-    try {
-        transcript = await youtubeService.getTranscript(videoUrl);
-    } catch (err) {
-        console.log("No transcript available. Continuing video processing.");
-    }
-}
-const textForEmbedding = `
-Title: ${aiData.title || title || ""}
-Description: ${aiData.description || ""}
-Summary: ${aiData.summary || ""}
-Tags: ${(aiData.tags || []).join(", ")}
-Category: ${aiData.category || ""}
-Transcript: ${transcript || ""}
-`;
+        if (platform === "youtube") {
+            try {
+                transcript = await youtubeService.getTranscript(videoUrl);
+            } catch (err) {
+                console.log("No transcript available. Continuing video processing.");
+            }
+        }
+        const textForEmbedding = `
+                Title: ${aiData.title || title || ""}
+                Description: ${aiData.description || ""}
+                Summary: ${aiData.summary || ""}
+                Tags: ${(aiData.tags || []).join(", ")}
+                Category: ${aiData.category || ""}
+                Transcript: ${transcript || ""}
+                `;
 
-const embedding = await embeddingService.generateEmbedding(
-    textForEmbedding
-);
+        const embedding = await embeddingService.generateEmbedding(
+            textForEmbedding
+        );
 
-console.log("Video embedding length:", embedding.length);
+        console.log("Video embedding length:", embedding.length);
 
-console.log("Transcript length:", transcript.length);
+        console.log("Transcript length:", transcript.length);
 
-       const newVideo = await Video.create({
+        const newVideo = await Video.create({
             user: user,
             title: aiData.title || "",
             videoUrl,
             thumbnailUrl: thumbnailUrl || "",
             duration: duration || 0,
             platform: platform || "unknown",
-            transcript: transcript || "" ,
+            transcript: transcript || "",
             aiDescription: aiData.description || "",
             summary: aiData.summary || "",
             tags: aiData.tags || [],
-            category: "Other",
+            category: aiData.category || "Other",
             embedding,
         });
 
@@ -99,8 +95,9 @@ console.log("Transcript length:", transcript.length);
         });
 
 
-    }catch(err){
-       res.status(500).json({"Messafe": "Error saving video", "Error": err.message});
+    }  catch (err) {
+    console.log("No video description available:", err.message); // add the err.message part
+    res.status(500).json({ message: "Error saving video", error: err.message });
     }
 }
 

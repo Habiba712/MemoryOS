@@ -95,4 +95,37 @@ ${text.slice(0, 12000)}
     return JSON.parse(cleaned);
 };
 
+
+geminiService.describeVideo = async (videoBuffer, mimeType = "video/mp4") => {
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const prompt = `
+Watch this video and respond with ONLY valid JSON, no markdown, no code fences, in this exact shape:
+{
+  "title": "short descriptive title",
+  "description": "1-2 sentence description of what happens in the video",
+  "summary": "a slightly longer summary, 2-3 sentences",
+  "tags": ["tag1", "tag2", "tag3"],
+  "category": "one of: Tutorial, Entertainment, Cooking, Fitness, Tech, Other"
+}
+`;
+
+    const result = await model.generateContent([
+        {
+            inlineData: {
+                data: videoBuffer.toString("base64"),
+                mimeType
+            }
+        },
+        prompt
+    ]);
+
+    const text = result.response.text().trim();
+    const cleaned = text.replace(/```json|```/g, "").trim();
+
+    return JSON.parse(cleaned);
+};
+
+
+
 module.exports = geminiService;
