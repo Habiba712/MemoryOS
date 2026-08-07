@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
-import BrainIcon from '../../assets/images/brain';
+import BrainIcon from '@/assets/images/brain';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
@@ -34,7 +34,7 @@ export function AnimatedSplashOverlay() {
     },
   });
 
-  const image = <Image style={styles.image} source={require('@/assets/images/expo-logo.png')} />;
+  const image = <BrainIcon />;
 
   return animate ? (
     <Animated.View
@@ -99,14 +99,7 @@ const glowKeyframe = new Keyframe({
 export function AnimatedIcon() {
   return (
     <View style={styles.iconContainer}>
-      {/* <Animated.View entering={glowKeyframe.duration(60 * 1000 * 4)} style={styles.glow}> */}
-       <BrainIcon /> 
-      {/* </Animated.View> */}
-
-      <Animated.View entering={keyframe.duration(DURATION)} style={styles.background} />
-      <Animated.View style={styles.imageContainer} entering={logoKeyframe.duration(DURATION)}>
-        <BrainIcon />
-      </Animated.View>
+      <BrainIcon />
     </View>
   );
 }
