@@ -7,5 +7,6 @@ const upload = multer({ storage });
 const router = Router();
 
 router.post('/saveVideo',videoController.saveVideo);
+router.get('/getVideoFiles/:userId', videoController.getVideoFiles);
 
 module.exports = router;
