@@ -7,7 +7,7 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 export default function HomeScreen() {
   return (
    <View style={styles.container}>  
-     <Text>Hello World</Text>
+     <Text>In this world</Text>
    </View>
   );
 }
@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
+    color: 'black',
   },
   safeArea: {
     flex: 1,
