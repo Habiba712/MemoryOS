@@ -28,7 +28,7 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="Upload">
+      <NativeTabs.Trigger name="upload">
         <NativeTabs.Trigger.Label>Upload</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require('@/assets/images/tabIcons/explore.png')}

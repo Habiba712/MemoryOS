@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     color: 'black',
+    
   },
   safeArea: {
     flex: 1,

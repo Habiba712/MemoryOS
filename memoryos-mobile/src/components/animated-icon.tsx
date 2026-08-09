@@ -38,7 +38,7 @@ export function AnimatedSplashOverlay() {
 
   return (
     <View style={styles.splashOverlay}>
-      <HomeScreen />
+      
     </View>
   )
 

@@ -87,17 +87,22 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: Spacing.two,
     maxWidth: MaxContentWidth,
+    backgroundColor: 'pink'
   },
   brandText: {
     marginRight: 'auto',
   },
   pressed: {
-    opacity: 0.7,
+    
+    color: 'black',
   },
   tabButtonView: {
     paddingVertical: Spacing.one,
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.three,
+    border: '1px solid pink',
+    backgroundColor: 'transparent',
+    textColor: 'white',
   },
   externalPressable: {
     flexDirection: 'row',
@@ -105,5 +110,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.one,
     marginLeft: Spacing.three,
+    color: 'black',
   },
 });
