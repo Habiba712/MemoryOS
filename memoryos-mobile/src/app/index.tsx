@@ -1,17 +1,54 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import LoginScreen from '@/app/auth/login';
  
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { router } from 'expo-router';
+
+import * as  SecureStore from "expo-secure-store";
+import { useState, useEffect } from 'react';
 
  
 export default function HomeScreen() {
+
+  const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState("");
+
+  useEffect(()=>{
+
+    const checkAuth = async ()=> {
+        const getToken = await SecureStore.getItemAsync('token');
+        if(!getToken){
+          router.replace('/auth/login')
+        }
+        setToken(getToken as string)
+        setLoading(false)
+
+       
+    }
+
+    checkAuth()
+  },[])
+
+  if (loading){
+    return(
+      <View>
+              <ActivityIndicator/>
+
+      </View>
+    )
+  }
   return (
    <View 
    style={styles.container}
    >  
-     <Text style={styles.title}>Welcome to my app :)</Text>
-     <LoginScreen />
+   {(!loading && token )? 
+   <Text style={styles.title}>Welcome to my app :) </Text>
+   : (!loading && !token) &&
+<LoginScreen />
+   }
+     
+     {/* <LoginScreen /> */}
    </View>
   );
 }
@@ -41,7 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     gap: Spacing.four,
   },
-  title: {
+  title: { 
     textAlign: 'center',
     color: 'pink',
      fontFamily: 'sans',
