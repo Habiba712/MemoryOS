@@ -1,13 +1,17 @@
 import * as Device from 'expo-device';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+import LoginScreen from '@/app/auth/login';
  
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 
  
 export default function HomeScreen() {
   return (
-   <View style={styles.container}>  
-     <Text>In this world</Text>
+   <View 
+   style={styles.container}
+   >  
+     <Text style={styles.title}>Welcome to my app :)</Text>
+     <LoginScreen />
    </View>
   );
 }
@@ -17,7 +21,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'row',
-    color: 'black',
+    paddingTop: 50,
+   
+
     
   },
   safeArea: {
@@ -37,6 +43,10 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    color: 'pink',
+     fontFamily: 'sans',
+    fontSize: 30,
+
   },
   code: {
     textTransform: 'uppercase',
