@@ -42,7 +42,7 @@ export default function LoginScreen() {
  
   await SecureStore.setItemAsync('token', data.token);
 
-      router.replace('/');
+      router.replace('/tabs');
     } catch (err) {
       setError('Something went wrong. Please try again.');
     } finally {

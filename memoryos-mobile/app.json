@@ -1,10 +1,12 @@
 {
   "expo": {
     "name": "memoryOS",
-    "slug": "memoryOS",
+    "slug": "your secondairy brain",
+    "description": "Your AI-powered second brain",
+    "privacy": "public",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/brain.js",
+    "icon": "./assets/images/brain.png",
     "scheme": "memoryosmobile",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -13,24 +15,24 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/brain.js",
-        "backgroundImage": "./assets/images/brain.js",
-        "monochromeImage": "./assets/images/brain.js"
+        "foregroundImage": "./assets/images/brain.png",
+        "backgroundImage": "./assets/images/brain.png",
+        "monochromeImage": "./assets/images/brain.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/brain.js"
+      "favicon": "./assets/images/brain.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/brain.js",
-          "imageWidth": 76
+          "backgroundColor": "#000000",
+          "image": "./assets/images/brain.png",
+          "imageWidth": 200
         }
       ],
       "expo-secure-store"

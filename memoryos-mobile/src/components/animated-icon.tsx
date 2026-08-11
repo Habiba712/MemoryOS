@@ -5,7 +5,7 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 import BrainIcon from '@/assets/images/brain';
-import HomeScreen from '@/app';
+import HomeScreen from '@/app/tabs';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;

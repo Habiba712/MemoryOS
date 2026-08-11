@@ -21,14 +21,14 @@ export default function HomeScreen() {
   router.replace('/auth/login');
 };
 
-  if (loading){
-    return(
-      <View>
-              <ActivityIndicator/>
+  // if (loading){
+  //   return(
+  //     <View>
+  //             <ActivityIndicator/>
 
-      </View>
-    )
-  }
+  //     </View>
+  //   )
+  // }
   return (
    <View 
    style={styles.container}
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     paddingTop: 50,
+    backgroundColor: 'pink',
    
 
     
