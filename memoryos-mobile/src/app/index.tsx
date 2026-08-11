@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { Platform, StyleSheet, Text, View, ActivityIndicator, Pressable } from 'react-native';
 import LoginScreen from '@/app/auth/login';
  
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -11,24 +11,15 @@ import { useState, useEffect } from 'react';
  
 export default function HomeScreen() {
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
 
-  useEffect(()=>{
-
-    const checkAuth = async ()=> {
-        const getToken = await SecureStore.getItemAsync('token');
-        if(!getToken){
-          router.replace('/auth/login')
-        }
-        setToken(getToken as string)
-        setLoading(false)
-
-       
-    }
-
-    checkAuth()
-  },[])
+  const handleLogout = async () => {
+    const getToken = await SecureStore.getItemAsync('token');
+    console.log('getToken', getToken);
+  await SecureStore.deleteItemAsync('token');
+  router.replace('/auth/login');
+};
 
   if (loading){
     return(
@@ -42,10 +33,20 @@ export default function HomeScreen() {
    <View 
    style={styles.container}
    >  
-   {(!loading && token )? 
-   <Text style={styles.title}>Welcome to my app :) </Text>
-   : (!loading && !token) &&
-<LoginScreen />
+   {(loading)? 
+   <Text style={styles.title}>Welcome to my app please wait :) </Text>
+   : 
+   <View>
+     <Text style={styles.title}>Welcome to my app :) </Text>
+   <Pressable 
+   
+   onPress={()=>handleLogout()}>
+     <Text style={styles.logoutButton}>Logout</Text>
+   </Pressable>
+   
+   </View>
+  
+
    }
      
      {/* <LoginScreen /> */}
@@ -95,4 +96,14 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.four,
     borderRadius: Spacing.four,
   },
+  logoutButton:{
+    color: 'red',
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    padding: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'red',
+  }
 });

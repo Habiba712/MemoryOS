@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
+import * as SecureStore from 'expo-secure-store';
 
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,23 +25,22 @@ export default function LoginScreen() {
     console.log('password',password);
 
     try {
-         const res = await fetch(`http://localhost:4000/api/auth/login`, {
+         const res = await fetch(`http://192.168.0.239:4000/api/auth/login`, {
         method: "POST",
         headers: { "content-Type": "application/json" },
         // credentials: "include",
         body: JSON.stringify({ email, password }),
       });
-      console.log('resss',res);
 
       const data = await res.json();
+      console.log('resss',data);
 
       if (!res.ok) {
         setError(data.message || 'Invalid email or password.');
         return;
       }
-
-      // We'll store the JWT here later.
-      // await SecureStore.setItemAsync('token', data.token);
+ 
+  await SecureStore.setItemAsync('token', data.token);
 
       router.replace('/');
     } catch (err) {

@@ -21,7 +21,7 @@ authController.login = async (req, res) => {
     const user = await User?.findOne({
       "base.email": email
     })
-
+console.log('user',user)
     const validatePassword = await bcrypt.compare(password, user?.base?.password);
     const now = new Date();
 
@@ -38,7 +38,7 @@ authController.login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRATION }
     )
-
+    console.log('token',token)
 
     if (user?.base?.lastLogin) {
       const lastLogin = new Date(user.base.lastLogin);

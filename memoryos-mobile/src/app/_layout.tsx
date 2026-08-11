@@ -1,27 +1,30 @@
-
 import AppTabs from '@/components/app-tabs';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
-import { router } from 'expo-router';
 import LoginScreen from './auth/login';
- 
 
 export default function RootLayout() {
+  const [token, setToken] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
 
-  const [token, setToken] = useState("");
+  useEffect(() => {
+    async function checkAuth() {
+      const storedToken = await SecureStore.getItemAsync('token');
 
- useEffect(()=>{
+      setToken(storedToken);
+      setChecking(false);
+    }
 
- const checkAuth = async ()=> {
-        const getToken = await SecureStore.getItemAsync('token');
-        if(!getToken){
-          router.replace('/auth/login')
-        }
-        setToken(getToken as string)
- }
- },[]);
-  return (
-    
-   token ? <AppTabs /> : <LoginScreen />
-  );
+    checkAuth();
+  }, []);
+
+  if (checking) {
+    return null;
+  }
+
+  if (!token) {
+    return <LoginScreen />;
+  }
+
+  return <AppTabs />;
 }
