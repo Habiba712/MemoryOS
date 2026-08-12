@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { View, StyleSheet, Animated, Easing, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const RADIUS = 105;
 
@@ -88,7 +89,11 @@ export default function BrainOrbit() {
       />
 
       <View style={styles.brainCore}>
-        <Ionicons name="body-outline" size={46} color="#5aa9ff" />
+           <Image
+                  source={require('@/assets/images/brain.png')}
+                  style={styles.logo}
+                  // resizeMode="contain"
+                />
       </View>
     </View>
   );
@@ -136,11 +141,13 @@ const styles = StyleSheet.create({
   brainCore: {
     width: 100,
     height: 100,
-    borderRadius: 26,
-    backgroundColor: '#0f1d33',
-    borderWidth: 1,
     borderColor: '#3978c9',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  logo: {
+    width: 70,
+    height: 70,
+  },
+
 });

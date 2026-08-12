@@ -10,7 +10,7 @@ export default function MemoryOSSplash() {
   return (
     <View style={styles.container}>
 
-      {/* Logo */}
+     
       <View style={styles.logoContainer}>
         <Image
           source={require('@/assets/images/brain.png')}
