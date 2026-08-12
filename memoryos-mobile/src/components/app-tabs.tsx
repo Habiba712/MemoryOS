@@ -1,41 +1,30 @@
-import { NativeTabs, Label, Icon } from 'expo-router/unstable-native-tabs';
+import {
+  NativeTabs,
+  Label,
+} from 'expo-router/unstable-native-tabs';
+import { Icon, VectorIcon } from 'expo-router/unstable-native-tabs';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function AppTabs() {
   return (
     <NativeTabs
       backgroundColor="#0B0F16"
       tintColor="#1877F2"
-      labelStyle={{
-        color: '#8A93A3',
-        fontSize: 11,
-      }}
     >
-      <NativeTabs.Trigger name="index">
-        <Label>Home</Label>
+   <NativeTabs.Trigger name="index">
+<Icon src={<VectorIcon family={MaterialIcons} name="home" />} />
+  <Label>Home</Label>
+</NativeTabs.Trigger>
 
-        <Icon
-          sf="house"
-          drawable="home"
-        />
-      </NativeTabs.Trigger>
+<NativeTabs.Trigger name="explore">
+ <Icon src={<VectorIcon family={MaterialIcons} name="folder" />} />
+  <Label>Files</Label>
+</NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="explore">
-        <Label>Files</Label>
-
-        <Icon
-          sf="folder"
-          drawable="folder"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="upload">
-        <Label>Upload</Label>
-
-        <Icon
-          sf="square.and.arrow.up"
-          drawable="square.and.arrow.up"
-        />
-      </NativeTabs.Trigger>
+<NativeTabs.Trigger name="upload">
+ <Icon src={<VectorIcon family={MaterialIcons} name="upload" />} />
+  <Label>Upload</Label>
+</NativeTabs.Trigger>
     </NativeTabs>
   );
 }
