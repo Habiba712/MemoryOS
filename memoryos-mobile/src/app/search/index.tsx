@@ -25,12 +25,11 @@ const FILTERS = [
   { key: 'links', label: 'Links' },
   { key: 'others', label: 'Others' },
 ];
-
-// ---------- shared animation helpers (same pattern as the rest of the app) ----------
+ 
 
 function AnimatedEntry({ children, index = 0, style }: { children: React.ReactNode; index?: number; style?: any }) {
   const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(8)).current;
+  const translateY = useRef(new Animated.Value(100)).current;
 
   useEffect(() => {
     Animated.parallel([

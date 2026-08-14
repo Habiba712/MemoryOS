@@ -15,7 +15,7 @@ import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
 
-const CURRENT_USER = { name: 'Habiba' };
+
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 
