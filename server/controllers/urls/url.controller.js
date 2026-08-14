@@ -157,7 +157,7 @@ urlController.getUrlsByUser = async (req, res) => {
         const urls = await Url.find({ user: userId });
         res.status(200).json({ urls });
     } catch (err) {
-        console.error("getUrlsByUser error:", err);
+        console.error("getUrlsByUser error:", err.message);
         res.status(500).json({
             message: "Server error",
             error: err.message

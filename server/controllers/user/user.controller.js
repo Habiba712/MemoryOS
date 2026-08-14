@@ -403,23 +403,24 @@ userController.settingsUpdateById = async (req, res) => {
 userController.getUserById = async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('id', id)
 
         // On tente le peuplement directement. 
         // Si finalUser.visits n'existe pas, Mongoose l'ignorera gentiment.
-        const user = await User.findById(id).populate({ path: 'finalUser.visits' }).lean();
+        const user = await User.findById(id)
+        const userBase = user.base;
+                console.log('user', userBase)
+
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Logique de réponse différenciée
-        if (user.base && user.base.role === "FINAL_USER") {
-            return res.status(200).json({ message: 'User found', user });
-        }
+        
+            return res.status(200).json({ message: 'User found', userBase });
+        
 
-        // Pour les autres rôles (RESTO_ADMIN, etc.)
-        return res.status(200).json({ message: 'User found', data: user });
-
+ 
     } catch (err) {
 (err);
     }

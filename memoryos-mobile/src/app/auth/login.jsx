@@ -25,6 +25,8 @@ export default function LoginScreen() {
     console.log('password',password);
 
     try {
+      // router.replace('/tabs');
+
          const res = await fetch(`http://192.168.0.239:4000/api/auth/login`, {
         method: "POST",
         headers: { "content-Type": "application/json" },
@@ -39,8 +41,8 @@ export default function LoginScreen() {
         setError(data.message || 'Invalid email or password.');
         return;
       }
- 
-  await SecureStore.setItemAsync('token', data.token);
+ console.log('data',data);
+  await SecureStore.setItemAsync('sessionData', JSON.stringify(data));
 
       router.replace('/tabs');
     } catch (err) {
