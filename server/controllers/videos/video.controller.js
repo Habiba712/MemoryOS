@@ -11,7 +11,8 @@ const videoController = {};
 videoController.saveVideo = async (req, res) => {
     try {
         const { user, videoUrl} = req.body;
-
+console.log('user',user);
+console.log('videoUrl',videoUrl);
         if (!user) {
             return res.status(400).json({ "Message": "User is required" });
         }
@@ -45,6 +46,7 @@ videoController.saveVideo = async (req, res) => {
                     videoBuffer,
                     "video/mp4"
                 );
+                console.log('aiData', aiData);
             } catch (err) {
                 console.log("No video description available:", err.message);
             }

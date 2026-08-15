@@ -97,6 +97,7 @@ geminiService.describeText = async (text) => {
 
 
 geminiService.describeVideo = async (videoBuffer, mimeType = "video/mp4") => {
+    console.log('we re here')
     const prompt = `
                 Watch this video and respond with ONLY valid JSON, no markdown, no code fences, in this exact shape:
                 {
