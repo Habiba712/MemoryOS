@@ -37,7 +37,15 @@ const username = usernameCell.next("td").text().trim() || null;
     username,
   });
 });
+const limit = 10;
 
-console.log("Posts found:", posts.length);
+const selectedPosts = posts.slice(0, limit);
 
-console.dir(posts[0], { depth: null });
+console.log(`Total posts found: ${selectedPosts.length}`);
+console.log(`Posts selected: ${selectedPosts.length}`);
+
+console.log(selectedPosts);
+
+console.log("Posts found:", selectedPosts.length);
+
+console.dir(selectedPosts[0], { depth: null });
