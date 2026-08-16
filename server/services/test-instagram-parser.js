@@ -6,7 +6,6 @@ const filePath =
 
 const html = fs.readFileSync(filePath, "utf8");
 const $ = cheerio.load(html);
-
 const posts = [];
 
 $("main > div").each((index, element) => {
@@ -44,8 +43,29 @@ const selectedPosts = posts.slice(0, limit);
 console.log(`Total posts found: ${selectedPosts.length}`);
 console.log(`Posts selected: ${selectedPosts.length}`);
 
-console.log(selectedPosts);
+const saveVideo = async (url, user) => {
+  console.log(`Saving video: ${url}`);
+  console.log(`User: ${user}`);
 
-console.log("Posts found:", selectedPosts.length);
+  const response = await fetch("http://localhost:4000/api/video/saveVideo", {
+    method: "POST",
+    // headers: {
+    //   "Content-Type": "application/json",
+    //   Authorization: `Bearer ${YOUR_TOKEN}`,
+    // },
+    body: JSON.stringify({
+      user,
+      videoUrl: url
+    }),
+  });
 
-console.dir(selectedPosts[0], { depth: null });
+  const result = await response.json();
+
+  console.log(result);
+};
+for (const post of selectedPosts) {
+  console.log(`Processing: ${post.url}`);
+const user = "6a6373cd96081f4f02c0de75";
+
+   saveVideo(post.url, user);
+}
