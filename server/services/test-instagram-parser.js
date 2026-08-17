@@ -7,6 +7,7 @@ const filePath =
 const html = fs.readFileSync(filePath, "utf8");
 const $ = cheerio.load(html);
 const posts = [];
+const failed = [];
 
 $("main > div").each((index, element) => {
   const post = $(element);
@@ -49,10 +50,10 @@ const saveVideo = async (url, user) => {
 
   const response = await fetch("http://localhost:4000/api/video/saveVideo", {
     method: "POST",
-    // headers: {
-    //   "Content-Type": "application/json",
-    //   Authorization: `Bearer ${YOUR_TOKEN}`,
-    // },
+    headers: {
+      "Content-Type": "application/json",
+      // Authorization: `Bearer ${YOUR_TOKEN}`,
+    },
     body: JSON.stringify({
       user,
       videoUrl: url
@@ -66,6 +67,13 @@ const saveVideo = async (url, user) => {
 for (const post of selectedPosts) {
   console.log(`Processing: ${post.url}`);
 const user = "6a6373cd96081f4f02c0de75";
+try{
+  saveVideo(post.url, user);
+}catch(err){
+    failed.push({
+      url: post.url,
+      error: err.message,
+    });
+}
 
-   saveVideo(post.url, user);
 }
