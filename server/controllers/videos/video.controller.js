@@ -4,13 +4,13 @@ const youtubeService = require("../../services/youtube.service");
 const videoService = require("../../services/video.service");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
-
+const fs = require("fs/promises");
 
 const videoController = {};
 
 videoController.saveVideo = async (req, res) => {
     try {
-        const { user, videoUrl} = req.body;
+        const { user, videoUrl, videoPath} = req.body;
 console.log('user',user);
 console.log('videoUrl',videoUrl);
         if (!user) {
