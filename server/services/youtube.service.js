@@ -2,8 +2,21 @@ const { YoutubeTranscript } = require("youtube-transcript");
 
 const youtubeService = {};
 
-youtubeService.getTranscript = async (videoUrl) => {
+youtubeService.getTranscript = async (videoUrl, instagramCaption = "") => {
+
+    console.log('captoion', instagramCaption)
     try {
+        // Instagram
+        if (
+            videoUrl.includes("instagram.com") &&
+            instagramCaption
+        ) {
+            return instagramCaption
+                .replace(/\s+/g, " ")
+                .trim();
+        }
+
+        // YouTube
         let normalizedUrl = videoUrl;
 
         const shortsMatch = videoUrl.match(
@@ -25,8 +38,8 @@ youtubeService.getTranscript = async (videoUrl) => {
             .trim();
 
     } catch (err) {
-        console.error("YouTube transcript error:", err);
-        throw new Error("Could not retrieve YouTube transcript");
+        console.error("Transcript error:", err);
+        // throw new Error("Could not retrieve transcript");
     }
 };
 

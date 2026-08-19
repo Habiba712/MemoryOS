@@ -10,7 +10,7 @@ const videoController = {};
 
 videoController.saveVideo = async (req, res) => {
     try {
-        const { user, videoUrl, videoPath} = req.body;
+        const { user, videoUrl, caption} = req.body;
 console.log('user',user);
 console.log('videoUrl',videoUrl);
         if (!user) {
@@ -22,6 +22,8 @@ console.log('videoUrl',videoUrl);
 
         const videoMetaData = await videoService.getVideoMetadata(videoUrl);
         const { platform, duration, thumbnailUrl, title } = videoMetaData;
+
+        console.log('platform', platform)
 
         let videoBuffer = null;
 
@@ -54,13 +56,12 @@ console.log('videoUrl',videoUrl);
  
         let transcript = "";
 
-        if (platform === "youtube") {
-            try {
-                transcript = await youtubeService.getTranscript(videoUrl);
-            } catch (err) {
-                console.log("No transcript available. Continuing video processing.");
-            }
+        if (platform === "youtube" || platfrom === "Instagram") {
+          
+                transcript = await youtubeService.getTranscript(videoUrl, caption);
+            
         }
+        
         const textForEmbedding = `
                 Title: ${aiData.title || title || ""}
                 Description: ${aiData.description || ""}

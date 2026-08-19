@@ -54,7 +54,7 @@ const importInstagram = async (filePath, userId, limit = 10) => {
     };
 
     for (const post of posts) {
-
+        console.log('captiob', post.caption)
         // Stop once we have enough successful imports
         if (results.successful.length >= limit) {
             break;
@@ -73,6 +73,7 @@ const importInstagram = async (filePath, userId, limit = 10) => {
                     body: JSON.stringify({
                         user: userId,
                         videoUrl: post.url,
+                        caption: post.caption
                     }),
                 }
             );
