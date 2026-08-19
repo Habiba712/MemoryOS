@@ -56,9 +56,9 @@ console.log('videoUrl',videoUrl);
  
         let transcript = "";
 
-        if (platform === "youtube" || platfrom === "Instagram") {
-          
-                transcript = await youtubeService.getTranscript(videoUrl, caption);
+        if (platform === "youtube" || platform === "Instagram") {
+            console.log("Getting transcript", caption || "");
+                transcript = await youtubeService.getTranscript(videoUrl, caption || "");
             
         }
         
