@@ -91,6 +91,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [videoFiles, setVideoFiles] = useState<any[]>([]);
   const [quickAccess, setQuickAccess] = useState({ images: 0, documents: 0, links: 0, others: 0 });
   const [userName, setUserName] = useState<string | null>(null);
 
@@ -109,6 +110,11 @@ export default function HomeScreen() {
       if (!res02.ok) throw new Error('Failed to load dashboard');
       const data02 = await res02.json();
 
+      const res03 = await fetch(`${API_URL}/api/video/getVideoFiles/${userId}`);
+      if (!res03.ok) throw new Error('Failed to load dashboard');
+      const data03 = await res03.json();
+      setVideoFiles(data03.videos);
+      console.log('res03',data03);
       const images = data.filter((f: any) => f.fileType === 'image').length;
       const documents = data.filter((f: any) => f.fileType === 'pdf' || f.fileType === 'word' || f.fileType === 'excel' || f.fileType === 'powerpoint' || f.fileType === 'text' || f.fileType === 'doc').length;
       const links = data02.urls.length;
@@ -225,6 +231,33 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
+ <View style={styles.filesList}>
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
+            : videoFiles.slice(0,5).map((file, i) => {
+              const visual = getItemVisual(file);
+              return (
+                <AnimatedEntry key={file._id} index={i}>
+                  <Pressy style={styles.fileRow} onPress={() => router.push(`/tabs/files/${file._id}`)}>
+                    <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
+                      <Ionicons name={file.platform === 'Instagram' ? 'logo-instagram' : 'logo-youtube'} size={17} color={visual.color} />
+                    </View>
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={styles.fileTitle} numberOfLines={1}>
+                        {file.title}
+                      </Text>
+                      <Text style={styles.fileMeta}>
+                        {timeAgo(file.createdAt)} · {file.category}
+                      </Text>
+                    </View>
+                    <Pressable hitSlop={10}>
+                      <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" />
+                    </Pressable>
+                  </Pressy>
+                </AnimatedEntry>
+              );
+            })}
+        </View>
         <View style={styles.filesList}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
