@@ -4,6 +4,7 @@ const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY
 });
 
+console.log('api key', process.env.GEMINI_API_KEY)
 const geminiService = {};
 
 geminiService.describeImage = async (imageBuffer, mimeType) => {

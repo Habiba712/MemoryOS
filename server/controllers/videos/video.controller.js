@@ -108,10 +108,12 @@ console.log('videoUrl',videoUrl);
 
 videoController.getVideoFiles = async (req, res) => {   
     try {
-        const userId = req.params.userId;
-        const res = await Video.find({ user: userId });
-        const videos = res.videos;
-        res.status(200).json({ videos });
+        const {userId} = req.params;
+        console.log('userId', userId);
+        const videos = await Video.find({ user: userId });
+        // const videos = res.videos;
+        console.log('videos', videos);
+       res.status(200).json({ videos });
     } catch (err) {
         console.log("Error getting videos:", err.message);
         res.status(500).json({ message: "Error getting videos", error: err.message });

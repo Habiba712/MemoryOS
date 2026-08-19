@@ -27,7 +27,10 @@ import {
   PlaneIcon,
   GraduationCapIcon,
   Briefcase,
+  
 } from "lucide-react";
+import { FaInstagram, FaYoutube } from "react-icons/fa";
+
 
 // swap this for a real session/user fetch once auth is wired up
 const CURRENT_USER = { name: "Habiba", initial: "H" };
@@ -41,6 +44,7 @@ export default function DashboardPage(){
   const [token, setToken] = useState(null);
   const [stats, setStats] = useState({});
   const [collectionFiles, setCollectionFiles] = useState([]);
+  const [videoFiles, setVideoFiles] = useState([]);
   const [urls, setUrls] = useState([]);
 
 
@@ -56,6 +60,11 @@ export default function DashboardPage(){
         const data02 = await res02.json();
         console.log(data02);
 
+        const res03 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/video/getVideoFiles/${userId}`);
+        if (!res03.ok) throw new Error("Failed to load dashboard");
+        const data03 = await res03.json();
+        setVideoFiles(data03.videos);
+        console.log('res03',data03);
         let totalFiles = data.length + data02.urls.length;
         let newThisWeek = data.filter(file => file.createdAt > (Date.now() - 1000 * 60 * 60 * 24 * 7)).length;
         let storageUsedGb = ((data.reduce((res, item) => res + item.size, 0)/1024/1024/1024) + (data02.urls.reduce((res, item) => res + item.contentSize, 0)/1024/1024/1024)).toFixed(2);
@@ -251,6 +260,15 @@ console.log('collec', collectionFiles)
             </Link>
           </div>
 
+ <div className="grid grid-cols-5 gap-4">
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="h-36 rounded-xl bg-gray-100 animate-pulse" />
+                ))
+              : videoFiles
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+              .map((file) => <FileCard key={file._id} file={file} />)}
+          </div>
           <div className="grid grid-cols-5 gap-4">
             {loading
               ? Array.from({ length: 5 }).map((_, i) => (
@@ -301,7 +319,7 @@ function StatCard({ icon, label, value, sub }) {
 }
 
 function FileCard({ file }) {
-  const badge = fileTypeBadge(file.fileType);
+  const badge = fileTypeBadge(file.fileType || file.platform);
 
   return (
     <Link
@@ -363,6 +381,10 @@ function fileTypeBadge(type) {
       return { label: "MP4", className: "bg-violet-100 text-violet-600" };
     case "image":
       return { label: "PNG", className: "bg-blue-100 text-blue-600" };
+      case "Instagram":
+      return { label: "Instagram", className: "bg-gradient-to-r from-[#405DE6] via-[#E1306C] to-[#FCAF45] text-white" };
+      case "Youtube":
+      return { label: "Youtube", className: "bg-gradient-to-r from-[#405DE6] via-[#E1306C] to-[#FCAF45] text-white" };
     default:
       return { label: "DOC", className: "bg-gray-100 text-gray-600" };
   }
