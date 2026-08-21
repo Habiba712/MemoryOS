@@ -114,7 +114,7 @@ export default function HomeScreen() {
       if (!res03.ok) throw new Error('Failed to load dashboard');
       const data03 = await res03.json();
       setVideoFiles(data03.videos);
-      console.log('res03',data03);
+      // console.log('res03',data03);
       const images = data.filter((f: any) => f.fileType === 'image').length;
       const documents = data.filter((f: any) => f.fileType === 'pdf' || f.fileType === 'word' || f.fileType === 'excel' || f.fileType === 'powerpoint' || f.fileType === 'text' || f.fileType === 'doc').length;
       const links = data02.urls.length;
