@@ -4,284 +4,39 @@ import { Pressable } from "react-native";
 import { View, Text, StyleSheet, FlatList, NativeSyntheticEvent, NativeScrollEvent, Dimensions, Animated } from "react-native";
 import * as SecureStore from 'expo-secure-store';
 import { router } from 'expo-router';
-import ImportIntro from "../../components/uploads/ImportIntro";
-import ImportProgress from "@/components/uploads/ImportPtogress";
-import ImportSettings from "@/components/uploads/ImportSettings";
-import ImportZip from "@/components/uploads/ImportZip";
-import ImportOptions from "@/components/uploads/importOptions";
+import { useNavigation } from '@react-navigation/native'; 
+
+
+ 
 import { Ionicons } from '@expo/vector-icons';
+import UploadsHome from "@/components/uploads/UploadsHome";
+import UploadLinks from "@/components/uploads/UploadLinks";
+import UploadZip from "@/components/uploads/UploadZip";
 
 
-const { width } = Dimensions.get('window');
-
-const SLIDES = [
-    {
-        key: '1',
-        Illustation: ImportSettings,
-        titleWhite: 'Bmring your saved content to MemoryOS',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: `INSTAGRAM`
-    },
-    {
-        key: '2',
-        Illustation: ImportIntro,
-        titleWhite: 'Search your saved posts',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.'
-    },
-    {
-        key: '3',
-        Illustation: ImportOptions,
-        titleWhite: 'Search your saved posts',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.'
-    },
-    {
-        key: '4',
-        Illustation: ImportZip,
-        titleWhite: 'Bring your saved content to MemoryOS',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.'
-    },
-    {
-        key: '5',
-        Illustation: ImportProgress,
-        titleWhite: 'Bring your saved content to MemoryOS',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.'
-    },
-
-]
-const ZIP_SLIDES = [
-    {
-        key: '1',
-        Illustation: ImportSettings,
-        titleWhite: 'Bring your saved content to MemoryOS',
-        subtitle: 'Instagram doesn\'t let you search your saved posts by meaning. MemoryOS canExport your Instagram saved posts and we\'ll turn them into a searchable library.',
-        description: `INSTAGRAM`
-    }
-]
-function AnimatedSlideText({ slide }: { slide: (typeof SLIDES)[number] }) {
-    const fade = useRef(new Animated.Value(0)).current;
-    const translateY = useRef(new Animated.Value(16)).current;
-
-    useEffect(() => {
-        fade.setValue(0);
-        translateY.setValue(16);
-        Animated.parallel([
-            Animated.timing(fade, { toValue: 1, duration: 500, useNativeDriver: true }),
-            Animated.timing(translateY, { toValue: 0, duration: 500, useNativeDriver: true }),
-        ]).start();
-    }, [slide.key, fade, translateY]);
-
-    return (
-        <Animated.View style={{ opacity: fade, transform: [{ translateY }] }}>
-            <Text style={styles.title}>
-                {slide.titleWhite}
-                {'\n'}
-                {slide.description ? (
-                    <>
-                        <Text style={styles.titleWhite}>{slide.description}</Text>
-                        <Text style={styles.titleWhite}>{slide.titleWhite}</Text>
-                    </>
-                ) : (
-                    <Text style={styles.titleWhite}>{slide.titleWhite}</Text>
-                )}
-            </Text>
-            <Text style={styles.subtitle}>{slide.subtitle}</Text>
-        </Animated.View>
-    );
-}
+    
 const Uploads = () => {
-    const listRef = useRef<FlatList>(null);
-    const [index, setIndex] = useState(0);
-    const [importFromLink, setImportFromLink] = useState(false);
-    const [importFromZip, setImportFromZip] = useState(false);
-    const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-        setIndex(Math.round(e.nativeEvent.contentOffset.x / width));
-    };
-    const finishOnboarding = async () => {
-        await SecureStore.setItemAsync('hasOnboarded', 'true');
-        router.replace('/tabs');
-    };
-    const next = () => {
-        if (index < SLIDES.length - 1) {
-            listRef.current?.scrollToIndex({ index: index + 1 });
-        } else {
-            finishOnboarding();
-        }
-    };
+     const navigation = useNavigation(); 
 
+    const [flow, setFlow] = useState<"home" | "import" | "zip">("home");
+   
+    if(flow === "import"){
+        return <UploadLinks
+        onBack={()=>setFlow("home")}
+        />
+    }
+    else if(flow === "zip"){
+        return <UploadZip 
+        onBack={()=>setFlow("home")}
+
+        />
+    }
+    
     return (
-        <View style={styles.container}>
-
-
-            <View style={styles.main}>
-                <Ionicons name="sparkles" size={100} color="#a78bfa" />
-                <Text style={styles.header}> Add memories</Text>
-                <Text style={styles.subHeader}>
-                    Bring anything into MemoryOS.
-                    We'll turn it into a searchable library for you.
-                </Text>
-
-                <View style={styles.links}>
-                    <Pressable style={styles.button}>
-                       <View style={styles.linkIcon}>
-                         <Ionicons name="link" size={35} color ="#fff" />
-                       </View>
-                       <View style={styles.textContainer}>
-                         
-                            <Text style={styles.buttonText}>
-                                From a link
-                                </Text>
-                            
-                            <Text style={styles.buttonSubText}>
-                                Paste a link from Insagram, Youtube, Pinterest or the web.
-                            </Text>
-                    
-                       </View>
-                      <View style={styles.chevron}>
-                        <Ionicons name="chevron-forward" size={40} color ="#fff" />
-                      </View>
-                    </Pressable>
-                     <Pressable style={styles.button}>
-                       <View style={styles.linkIcon}>
-                         <Ionicons name="link" size={35} color ="#fff" />
-                       </View>
-                       <View style={styles.textContainer}>
-                         
-                            <Text style={styles.buttonText}>
-                                Import your ZIP file
-                                </Text>
-                            
-                            <Text style={styles.buttonSubText}>
-                                Paste a link from Insagram, Youtube, Pinterest or the web.
-                            </Text>
-                    
-                       </View>
-                      <View style={styles.chevron}>
-                        <Ionicons name="chevron-forward" size={40} color ="#fff" />
-                      </View>
-                    </Pressable>
-                     <Pressable style={styles.button}>
-                       <View style={styles.linkIcon}>
-                         <Ionicons name="link" size={35} color ="#fff" />
-                       </View>
-                       <View style={styles.textContainer}>
-                         
-                            <Text style={styles.buttonText}>
-                                From your device
-                                </Text>
-                            
-                            <Text style={styles.buttonSubText}>
-                                Paste a link from Insagram, Youtube, Pinterest or the web.
-                            </Text>
-                    
-                       </View>
-                      <View style={styles.chevron}>
-                        <Ionicons name="chevron-forward" size={40} color ="#fff" />
-                      </View>
-                    </Pressable>
-
-                </View>
-            </View>
-            {/* normal links share flatlist*/}
-            {
-                importFromLink ?  
-                <>
-                
-                <FlatList
-                data={SLIDES}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                keyExtractor={(item) => item.key}
-                ref={listRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                pagingEnabled
-                renderItem={({ item }) => {
-                    const Illustation = item.Illustation;
-                    return (
-                        <View style={[styles.slide, { width }]}>
-                            <View style={styles.IllustationWrap}>
-                                <Illustation />
-                            </View>
-                            <AnimatedSlideText slide={item} />
-                        </View>
-                    );
-                }}
-
-            />
-            <View style={styles.dots}>
-                {SLIDES.map((_, i) => (
-                    <View key={i} style={[styles.dot, i === index && styles.dotActive]} />
-                ))}
-            </View>
-
-            <View style={styles.footer}>
-                <Pressable onPress={finishOnboarding}>
-                    <Text style={styles.skip}>Skip</Text>
-                </Pressable>
-                <Pressable style={styles.nextButton} onPress={next}>
-                    <Text style={styles.nextText}>
-                        {index === SLIDES.length - 1 ? 'Get Started' : 'Next'}
-                    </Text>
-                </Pressable>
-            </View>
-            </>
-            :
-            null
-            }
-          
-            {/* instagram zip flatlist */}
-            {
-                importFromZip ?
-                    <>
-                
-                <FlatList
-                data={SLIDES}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                keyExtractor={(item) => item.key}
-                ref={listRef}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                pagingEnabled
-                renderItem={({ item }) => {
-                    const Illustation = item.Illustation;
-                    return (
-                        <View style={[styles.slide, { width }]}>
-                            <View style={styles.IllustationWrap}>
-                                <Illustation />
-                            </View>
-                            <AnimatedSlideText slide={item} />
-                        </View>
-                    );
-                }}
-
-            />
-            <View style={styles.dots}>
-                {ZIP_SLIDES.map((_, i) => (
-                    <View key={i} style={[styles.dot, i === index && styles.dotActive]} />
-                ))}
-            </View>
-
-            <View style={styles.footer}>
-                <Pressable onPress={finishOnboarding}>
-                    <Text style={styles.skip}>Skip</Text>
-                </Pressable>
-                <Pressable style={styles.nextButton} onPress={next}>
-                    <Text style={styles.nextText}>
-                        {index === SLIDES.length - 1 ? 'Get Started' : 'Next'}
-                    </Text>
-                </Pressable>
-            </View>
-            </>
-            :
-            null
-            }
-
-        </View>
+        <UploadsHome
+        onLinkPress={()=>setFlow("import")}
+        onZipPress={()=>setFlow("zip")}
+        />
     )
 }
 
@@ -326,12 +81,13 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#8f66a9',
     display: 'flex',
        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         margin: 10,
+        borderColor: '#1f2740',
+        backgroundColor: '#141a2b'
 
         
     }
@@ -349,8 +105,6 @@ const styles = StyleSheet.create({
         // marginBottom: 10,
     },
     chevron:{
-         color: '#fff',
-         borderWidth: 1,
     },
 
     buttonSubText:{
@@ -366,7 +120,6 @@ const styles = StyleSheet.create({
         // marginBottom: 10,
     },
     textContainer:{
-        borderWidth: 1,
        display: 'flex',
        flexDirection: 'column',
        flexWrap: 'wrap',
@@ -376,11 +129,20 @@ const styles = StyleSheet.create({
     },
     linkIcon:{
         color: '#fff',
-        backgroundColor: '#8f66a9',
         padding: 18,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: [{ rotate: '-45deg' }],
+
+    },
+    linkIconContainer:{
+        borderWidth: 1,
+        borderColor: '#1f2740',
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     slide: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
     IllustationWrap: { marginBottom: 36, alignItems: 'center', justifyContent: 'center' },
