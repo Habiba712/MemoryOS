@@ -5,9 +5,12 @@ import { Pressable, View, Text, StyleSheet, FlatList, NativeSyntheticEvent, Nati
 import { Ionicons } from '@expo/vector-icons';
 
 
-export default function UploadLinks() {
+export default function UploadLinks({onBack}:{onBack : ()=>void}) {
     return(
         <View style={styles.container}>
+            <Pressable onPress={()=>{onBack}}>
+                <Ionicons name="arrow-back"/>
+            </Pressable>
             <Text>Import Zip</Text>
             </View>
     )

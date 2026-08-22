@@ -4,13 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { Pressable, View, Text, StyleSheet, FlatList, NativeSyntheticEvent, NativeScrollEvent, Dimensions, Animated } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-type Props = {
-    onBack: () => void;
-};
-export default function UploadLinks({ onBack }: Props) {
+ 
+export default function UploadLinks({onBack}:{onBack : ()=>void}) {
     return(
         <View style={styles.container}>
-            <Text style={styles.header}> Import links</Text>
+            <View style={styles.header}> 
+                <Pressable onPress={onBack}>
+                <Ionicons name="arrow-back" color="#fff" size={25} />
+            </Pressable>
+           
+            </View>
+            <Text style={{fontSize: 30, fontWeight: '700', color: '#fff', marginLeft: 10}}>
+                Import links
+                </Text> 
             </View>
     )
 }
@@ -24,6 +30,7 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
         paddingTop: 100,
         paddingHorizontal: 30,
+        position: 'relative',
 
     },
     header:{
@@ -31,6 +38,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#fff',
         marginBottom: 4,
-        fontFamily: 'sans-serif-medium'
+        fontFamily: 'sans-serif-medium',
+        display: 'flex',
+        flexDirection: 'row',
+        position: 'absolute',
+        top: 40,
+        width: '100%',
+        justifyContent: 'space-between',
     },
 })

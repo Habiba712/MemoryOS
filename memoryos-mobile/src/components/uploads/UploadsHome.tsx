@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from "react";
 import { Pressable, View, Text, StyleSheet, FlatList, NativeSyntheticEvent, NativeScrollEvent, Dimensions, Animated } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
@@ -9,83 +7,75 @@ export default function UploadsHome({onLinkPress, onZipPress}:{onLinkPress:()=>v
     return(
         <View style={styles.container}>
                          <View style={styles.main}>
-                            <Ionicons name="sparkles" size={100} color="#a78bfa" />
-                            <Text style={styles.header}> Add memories</Text>
+                            <Ionicons name="sparkles" size={60} color="#a78bfa" />
+                            <Text style={styles.header}>Add memories</Text>
                             <Text style={styles.subHeader}>
                                 Bring anything into MemoryOS.
-                                We'll turn it into a searchable library for you.
+                                We'll turn it into a memory you can search forever.
                             </Text>
             
                             <View style={styles.links}>
                                 <Pressable style={styles.button} 
                                 onPress={()=>onLinkPress()}
                                 >
-                               
-            
-                                   <View backgroundColor="#8f66a9" style={styles.linkIconContainer}
-                                   
-                                   >
-                                     <Ionicons name="link" size={35} color="#fff"
+                                   <View style={[styles.linkIconContainer, {backgroundColor:"#8f66a9"}]}>
+                                     <Ionicons name="link" size={22} color="#fff"
                                      style={styles.linkIcon}
                                      /> 
                                    </View>
                                    <View style={styles.textContainer}>
-                                     
                                         <Text style={styles.buttonText}>
                                             From a link
                                             </Text>
-                                        
                                         <Text style={styles.buttonSubText}>
-                                            Paste a link from Insagram, Youtube, Pinterest or the web.
+                                            Paste a link from Instagram, YouTube, Pinterest or the web.
                                         </Text>
-                                
                                    </View>
                                   <View style={styles.chevron}>
-                                    <Ionicons name="arrow-forward" size={30} color ="#fff" />
+                                    <Ionicons name="chevron-forward" size={20} color="#5a6480" />
                                   </View>
                                 </Pressable>
                                  <Pressable style={styles.button}
                                 onPress={()=>onZipPress()}
-                                 
                                  >
-                                   <View backgroundColor="#6db099" style={styles.linkIconContainer}>
-                                     <Ionicons style={styles.linkIcon} name="zip-file" size={35} color="#fff" />
+                                   <View style={[styles.linkIconContainer, {backgroundColor:"#6db099"}]}>
+                                     <Ionicons style={styles.linkIcon} name="archive" size={22} color="#fff" />
                                    </View>
                                    <View style={styles.textContainer}>
-                                     
                                         <Text style={styles.buttonText}>
-                                            Import your ZIP file
+                                            Import your history
                                             </Text>
-                                        
                                         <Text style={styles.buttonSubText}>
-                                            Paste a link from Insagram, Youtube, Pinterest or the web.
+                                            Upload your Instagram data ZIP and bring hundreds of memories at once.
                                         </Text>
-                                
                                    </View>
                                   <View style={styles.chevron}>
-                                    <Ionicons name="arrow-forward" size={30} color ="#fff" />
+                                    <Ionicons name="chevron-forward" size={20} color="#5a6480" />
                                   </View>
                                 </Pressable>
                                  <Pressable style={styles.button}>
-                                   <View backgroundColor="#3494e7" style={styles.linkIconContainer}>
-                                     <Ionicons style={styles.linkIcon} name="link" size={35} color="#fff" />
+                                   <View style={[styles.linkIconContainer, {backgroundColor:"#3494e7"}]}>
+                                     <Ionicons style={styles.linkIcon} name="phone-portrait" size={22} color="#fff" />
                                    </View>
                                    <View style={styles.textContainer}>
-                                     
                                         <Text style={styles.buttonText}>
                                             From your device
                                             </Text>
-                                        
                                         <Text style={styles.buttonSubText}>
-                                            Paste a link from Insagram, Youtube, Pinterest or the web.
+                                            Upload photos, documents or screenshots.
                                         </Text>
-                                
                                    </View>
                                   <View style={styles.chevron}>
-                                    <Ionicons name="arrow-forward" size={30} color ="#fff" />
+                                    <Ionicons name="chevron-forward" size={20} color="#5a6480" />
                                   </View>
                                 </Pressable>
-            
+
+                                <View style={styles.privacyBox}>
+                                  <Ionicons name="shield-checkmark" size={20} color="#a78bfa" />
+                                  <Text style={styles.privacyText}>
+                                    Your data is private and secure.{"\n"}We only use your data to create your memories.
+                                  </Text>
+                                </View>
                             </View>
                         </View> 
         </View>
@@ -102,152 +92,99 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
         paddingTop: 100,
         paddingHorizontal: 30,
-
     },
     main:{
         flex: 1,
-        // justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 30,
+        // width: Dimensions.get('window').width,
+        // paddingHorizontal: 10,
+        // borderWidth: 1,
+        // borderColor: '#1f2740',
     },
     header:{
-        fontSize: 40,
+        fontSize: 26,
         fontWeight: '700',
         color: '#fff',
-        marginBottom: 4,
+        marginTop: 12,
+        marginBottom: 6,
         fontFamily: 'sans-serif-medium'
     },
     subHeader:{
-        color: '#e9e2e2f7',
-        width: 300,
+        color: '#a3a9bb',
+        width: 260,
         textAlign: 'center',
-        fontWeight: 'semibold',
-        fontSize: 18,
-        marginBottom: 20,
+        fontWeight: '500',
+        fontSize: 14.5,
+        lineHeight: 20,
+        marginBottom: 24,
         fontFamily: 'sans-serif-medium'
-
-        
     },
     button:{
-        // backgroundColor: '#8f66a9',
-        paddingHorizontal: 10,
-        paddingVertical: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 16,
         borderRadius: 20,
         borderWidth: 1,
-    display: 'flex',
-       flexDirection: 'row',
+        width:'100%',
+        display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        margin: 10,
+        marginBottom: 12,
         borderColor: '#1f2740',
         backgroundColor: '#141a2b'
-
-        
-    }
-    ,
+    },
     buttonText:{
         color: '#fff',
-        fontSize: 18,
+        fontSize: 15.5,
         fontWeight: '700',
         fontFamily: 'sans-serif-medium',
-        display: 'flex',
-        flexDirection: 'column',
-
-        // flexWrap: 'wrap',
-        // width: '100%',
-        // marginBottom: 10,
     },
     chevron:{
+        marginLeft: 6,
     },
-
     buttonSubText:{
-        color: '#ccc9c9ac',
-        fontSize: 13,
-        fontWeight: '600',
+        color: '#8a94a8',
+        fontSize: 12.5,
+        fontWeight: '500',
         fontFamily: 'sans-serif-medium',
-         display: 'flex',
-         flexWrap: 'wrap',
-         width: 250
-        // display: 'flex',
-        // flexDirection: 'column',
-        // marginBottom: 10,
+        flexWrap: 'wrap',
+        width: 210,
+        marginTop: 2,
     },
     textContainer:{
-       display: 'flex',
        flexDirection: 'column',
        flexWrap: 'wrap',
-       paddingLeft: 18,
-       width: 250,
-       margin: 5,
+       paddingLeft: 12,
+       width: 210,
     },
     linkIcon:{
         color: '#fff',
-        padding: 18,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-        transform: [{ rotate: '-45deg' }],
-
     },
     linkIconContainer:{
-        borderWidth: 1,
-        borderColor: '#1f2740',
-        borderRadius: 20,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
-
     },
-    slide: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
-    IllustationWrap: { marginBottom: 36, alignItems: 'center', justifyContent: 'center' },
-
-    scrollContent: {
-        paddingHorizontal: 18,
-        paddingTop: 8,
-        paddingBottom: 40
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: '700',
-        color: '#fff',
-        marginBottom: 4
-    },
-    links:{
-
-    },
-    titleWhite: {
-        color: '#fff'
-    },
-    description: {
-        fontSize: 14.5,
-        color: '#8a94a8',
-        marginTop: 5,
-        marginBottom: 24,
-        minHeight: 100,
-    },
-    subtitle: {
-        fontSize: 14.5,
-        color: '#8a94a8',
-        textAlign: 'center',
-        lineHeight: 21,
-        paddingHorizontal: 8,
-    },
-    dots: { flexDirection: 'row', justifyContent: 'center', marginBottom: 24 },
-    dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#22314d', marginHorizontal: 4 },
-    dotActive: { backgroundColor: '#4d9cff', width: 20 },
-    footer: {
+    privacyBox:{
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingBottom: 40,
+        borderWidth: 1,
+        borderColor: '#2a2140',
+        backgroundColor: '#171225',
+        borderRadius: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        marginTop: 4,
+        gap: 10,
     },
-    skip: { color: '#6a7488', fontSize: 14 },
-    nextButton: {
-        backgroundColor: '#4d9cff',
-        paddingHorizontal: 26,
-        paddingVertical: 13,
-        borderRadius: 14,
+    privacyText:{
+        color: '#c9b8f5',
+        fontSize: 12,
+        fontWeight: '500',
+        flex: 1,
+        flexWrap: 'wrap',
     },
-    nextText: { color: '#fff', fontWeight: '600', fontSize: 14 },
-
+    links:{},
 })

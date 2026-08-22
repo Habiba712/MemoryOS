@@ -17,6 +17,7 @@ import UploadZip from "@/components/uploads/UploadZip";
     
 const Uploads = () => {
      const navigation = useNavigation(); 
+    //  const onBack = ()=>navigation.goBack();
 
     const [flow, setFlow] = useState<"home" | "import" | "zip">("home");
    
