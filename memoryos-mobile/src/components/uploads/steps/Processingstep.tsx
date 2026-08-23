@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text, StyleSheet, Animated, Easing } from "react-native";
+import { View, Text, StyleSheet, Animated, Easing, Pressable } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
+import { ImportState } from "../UploadZip";
 
 // Shared by ZIP flow and link flow — this component doesn't know or care
-// which one it came from, it just needs a total count and something to
+// which one it came from, it just needs a totalData count and something to
 // call when done. That's what makes it reusable.
 
 type ProcessingResult = {
@@ -15,11 +16,15 @@ type ProcessingResult = {
 };
 
 export default function ProcessingStep({
-    total,
+    onBack,
+    totalData,
     onDone,
+    user,
 }: {
-    total: number;
+    totalData: ImportState;
     onDone: (result: ProcessingResult) => void;
+    onBack: () => void;
+    user: string;
 }) {
     const [processed, setProcessed] = useState(0);
     const [success, setSuccess] = useState(0);
@@ -37,19 +42,34 @@ export default function ProcessingStep({
         ).start();
     }, []);
 
-    // Placeholder progress loop — swap this for your real upload/processing
-    // subscription (e.g. websocket or polling job status).
+    const processPosts = async () => {
+        const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/insta/processPosts`, {  
+            method: 'POST',
+            body: JSON.stringify({
+                posts: totalData.posts,
+                userId: user,
+                limit: totalData.chosenAmount,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            });
+        const data = await res.json();
+        console.log('data', data)
+      
+    }
+
     useEffect(() => {
-        if (total <= 0) return;
+        if (totalData.chosenAmount <= 0) return;
         const interval = setInterval(() => {
             setProcessed((prev) => {
-                const next = Math.min(prev + Math.ceil(total / 40), total);
+                const next = Math.min(prev + Math.ceil(totalData.posts.length / 40), totalData.posts.length);
 
                 const willFail = Math.random() < 0.07;
                 if (willFail) setFailed((f) => f + 1);
                 else setSuccess((s) => s + 1);
 
-                if (next >= total) {
+                if (next >= totalData.chosenAmount) {
                     clearInterval(interval);
                     setTimeout(() => {
                         onDone({
@@ -65,10 +85,10 @@ export default function ProcessingStep({
         }, 120);
 
         return () => clearInterval(interval);
-    }, [total]);
+    }, [totalData]);
 
-    const pct = total > 0 ? Math.round((processed / total) * 100) : 0;
-    const remaining = Math.max(total - processed, 0);
+    const pct = totalData.chosenAmount > 0 ? Math.round((processed / totalData.chosenAmount) * 100) : 0;
+    const remaining = Math.max(totalData.chosenAmount - processed, 0);
 
     const rotate = spin.interpolate({
         inputRange: [0, 1],
@@ -77,6 +97,9 @@ export default function ProcessingStep({
 
     return (
         <View style={styles.container}>
+             <Pressable onPress={onBack} >
+                <Ionicons name="arrow-back" size={22} color="#fff" />
+            </Pressable>
             <Text style={styles.header}>Importing your memories...</Text>
             <Text style={styles.subHeader}>
                 AI is working hard! You can see real-time progress and details.
@@ -100,7 +123,7 @@ export default function ProcessingStep({
                 <View style={styles.ringCenter}>
                     <Text style={styles.ringPct}>{pct}%</Text>
                     <Text style={styles.ringCount}>
-                        {processed} / {total}
+                        {processed} / {totalData.chosenAmount}
                     </Text>
                     <Text style={styles.ringLabel}>posts processed</Text>
                 </View>
@@ -131,7 +154,7 @@ export default function ProcessingStep({
                         <Ionicons name="sync" size={18} color="#a78bfa" />
                     </Animated.View>
                     <Text style={styles.currentText}>
-                        Post {Math.min(processed + 1, total)} of {total}: Analyzing image and caption...
+                        Post {Math.min(processed + 1, totalData.posts.length)} of {totalData.chosenAmount}: Analyzing image and caption...
                     </Text>
                 </View>
             </View>

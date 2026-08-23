@@ -14,7 +14,7 @@ export default function ChooseAmountStep({
     onContinue: (amount: number) => void;
 }) {
     const [selected, setSelected] = useState<Option>("all");
-    const [customAmount, setCustomAmount] = useState("500");
+    const [customAmount, setCustomAmount] = useState("5");
     console.log('totalPosts', totalPosts)
 
     // These would normally come from actually scanning post dates in the zip.

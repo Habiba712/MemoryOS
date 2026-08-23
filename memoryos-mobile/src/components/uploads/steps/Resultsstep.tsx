@@ -7,16 +7,21 @@ export default function ResultsStep({
     importState,
     onRetryFailed,
     onDone,
+    onBack,
 }: {
     importState: ImportState;
     onRetryFailed: () => void;
     onDone: () => void;
+    onBack: () => void;
 }) {
     const { totalPosts, successCount, failedCount, failedThumbnails } = importState;
     const hasFailed = failedCount > 0;
 
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+             <Pressable onPress={onBack} style={styles.backButton}>
+                            <Ionicons name="arrow-back" size={22} color="#fff" />
+                        </Pressable>
             <Text style={styles.header}>Import completed!</Text>
             <Text style={styles.subHeader}>We added most of your memories to MemoryOS.</Text>
 
@@ -134,4 +139,6 @@ const styles = StyleSheet.create({
     viewText: { color: "#fff", fontWeight: "700", fontSize: 14.5 },
     backLink: { alignItems: "center" },
     backLinkText: { color: "#8f7ee0", fontSize: 12.5, fontWeight: "600" },
+    backButton: { marginBottom: 20 },
+
 });

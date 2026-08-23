@@ -9,6 +9,7 @@ import * as SecureStore from 'expo-secure-store';
 
 
 export type ImportState = {
+    posts: any[];
     totalPosts: number;
     chosenAmount: number;
     processedCount: number;
@@ -32,6 +33,7 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
     };
     const [zipFile, setZipFile] = useState<ZipFile | null>(null);
     const [importState, setImportState] = useState<ImportState>({
+        posts: [],
         totalPosts: 0,
         chosenAmount: 0,
         processedCount: 0,
@@ -129,7 +131,7 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
                         const data = await response.json();
                         console.log('data', data)
 
-                        setImportState((s) => ({ ...s, totalPosts: data.totalFound }));
+                        setImportState((s) => ({ ...s, totalPosts: data.results.totalFound, posts: data.results.posts }));
                         goNext();
                     }}
 
@@ -142,6 +144,8 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
                     totalPosts={importState.totalPosts}
                     onContinue={(amount) => {
                         setImportState((s) => ({ ...s, chosenAmount: amount }));
+                        console.log('amount', amount)
+                        
                         goNext();
                     }}
                 />
@@ -149,10 +153,11 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
 
             {step === "processing" && (
                 <ProcessingStep
-                    total={importState.chosenAmount}
-                    // Swap this for your real upload/processing hook.
-                    // It just needs to call onDone with final counts when finished.
+                    onBack={goBack}
+                    totalData={importState}
+                    user={user}
                     onDone={(result) => {
+                      
                         setImportState((s) => ({ ...s, ...result }));
                         goNext();
                     }}
@@ -161,6 +166,7 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
 
             {step === "results" && (
                 <ResultsStep
+                    onBack={goBack}
                     importState={importState}
                     onRetryFailed={() => {
                         // Re-run processing scoped to just the failed ones
