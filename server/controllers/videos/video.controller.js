@@ -126,6 +126,11 @@ videoController.getOneVideoFile = async (req, res) => {
         const video = await Video.findById(id);
         // const videos = res.videos;
         console.log('video', video);
+        if (!video) {
+    return res.status(404).json({
+        message: "Video not found",
+    });
+}
        res.status(200).json({ video });
     } catch (err) {
         console.log("Error getting videos:", err.message);

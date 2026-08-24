@@ -142,13 +142,45 @@ export default function FileDetailScreen({
                             {file.title}
                         </Text>
                         <Text style={styles.fileMeta}>
-                            {file.sizeLabel || '0.0'} • {file.date}
+                            {file.size || '0.0'} • {file.date}
                         </Text>
                     </View>
                     <Pressable style={styles.iconButton}>
                         <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
                     </Pressable>
                 </View>
+
+                   <View style={styles.infoRow}>
+                    
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.fileName} numberOfLines={1}>
+                            AI summary
+                        </Text>
+                        <Text style={styles.fileMeta}>
+                            {file.summary || '0.0'}
+                        </Text>
+                    </View>
+                    <Pressable style={styles.iconButton}>
+                        <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
+                    </Pressable>
+                </View>
+                
+                   <View style={styles.infoRow}>
+                    
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.fileName} numberOfLines={1}>
+                            AI description
+                        </Text>
+                        <Text style={styles.fileMeta}>
+                            {file.aiDescription || ""}
+                        </Text>
+                    </View>
+                    <Pressable style={styles.iconButton}>
+                        <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
+                    </Pressable>
+                </View>
+                
+
 
                 <View style={styles.actionsRow}>
                     <ActionButton icon="share-outline" label="Share" onPress={onShare} />

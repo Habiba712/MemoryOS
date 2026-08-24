@@ -73,7 +73,7 @@ export default function FilePage() {
 
             // 2. If it isn't a video, try the files collection
             if (!response.ok) {
-                // console.log("Not found as video, trying files...");
+                console.log("Not found as video, trying files...");
 
                 response = await fetch(
                     `${process.env.EXPO_PUBLIC_API_URL}/api/file/getFile/${id}`,
@@ -90,15 +90,20 @@ export default function FilePage() {
 
             const data: ApiFile = await response.json();
 
-            console.log("FINAL DATA:", data);
+            console.log("FINAL DATA:", data.size);
 
             setFile({
                 fileType: data.fileType || data.platform || "Other",
                 title: data.title || data.name || "Untitled",
-                size: data.size ? formatBytes(data.size) : "",
+                size: formatBytes(data.size),
                 date: data.createdAt ? formatDate(data.createdAt) : "",
                 videoUrl: data.videoUrl || data.url,
                 thumbnailUrl: data.thumbnailUrl,
+                summary: data.summary,
+                aiDescription: data.aiDescription,
+                tags: data.tags,
+                category: data.category,
+                
             });
 
         } catch (e: any) {
