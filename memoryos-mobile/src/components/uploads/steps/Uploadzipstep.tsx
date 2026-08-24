@@ -1,7 +1,8 @@
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Animated, Easing } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 // If you don't already have this installed: expo install expo-document-picker
 import * as DocumentPicker from "expo-document-picker";
+import { useEffect, useRef, useState } from "react";
 
 type PickedFile = { uri: string;
     name: string;
@@ -25,9 +26,17 @@ export default function UploadZipStep({
     onBack: () => void;
     zipFile: PickedFile | null;
     onFilePicked: (file: PickedFile) => void;
-    onContinue: () => void;
+    onContinue: () => Promise<void>;
 }) {
+        const spin = useRef(new Animated.Value(0)).current;
+    
+  const rotate = spin.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["0deg", "360deg"],
+    });
+    const [isLoading, setIsLoading] = useState(false);
     const handleChooseFile = async () => {
+
         const result = await DocumentPicker.getDocumentAsync({
             type: "application/zip",
             copyToCacheDirectory: true,
@@ -43,6 +52,29 @@ export default function UploadZipStep({
             mimeType: asset.mimeType,
         });
     };
+
+    const handleContinue = async () =>{
+        if(!zipFile || isLoading) return;
+
+        try{
+            setIsLoading(true);
+            await onContinue();
+            setIsLoading(false);
+        }catch(e){
+            setIsLoading(false);
+        }
+    }
+    
+    useEffect(() => {
+        Animated.loop(
+            Animated.timing(spin, {
+                toValue: 1,
+                duration: 2000,
+                easing: Easing.linear,
+                useNativeDriver: true,
+            })
+        ).start();
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -83,12 +115,24 @@ export default function UploadZipStep({
             )}
 
             <Pressable
-                style={[styles.continueButton, !zipFile && styles.continueButtonDisabled]}
+                style={[styles.continueButton, (!zipFile || isLoading) && styles.continueButtonDisabled]}
                 disabled={!zipFile}
-                onPress={onContinue}
+                onPress={handleContinue}
             >
-                <Text style={styles.continueText}>Upload & continue</Text>
+                <Text style={[styles.continueText, isLoading && styles.loadingText]}>{
+                    isLoading ? "Loading..." : "Upload & continue"
+
+}</Text>
+                <View style={styles.loadingIcons}>
+                     {isLoading ? 
+                    <Animated.View style={{ transform: [{ rotate }] }}>
+                        <Ionicons name="sync" size={18} color="#a78bfa" />
+                    </Animated.View>
+                                         :
                 <Ionicons name="arrow-forward" size={18} color="#fff" />
+                }
+                </View>
+               
             </Pressable>
         </View>
     );
@@ -160,13 +204,34 @@ const styles = StyleSheet.create({
         backgroundColor: "#7c5cf5",
         borderRadius: 16,
         paddingVertical: 15,
+        display: "flex",
         flexDirection: "row",
-        alignItems: "center",
+        borderColor: "#fff",
         justifyContent: "center",
         gap: 8,
     },
     continueButtonDisabled: {
         opacity: 0.4,
+          display: "flex",
+        flexDirection: "row",
+        borderColor: "#fff",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
     },
-    continueText: { color: "#fff", fontWeight: "700", fontSize: 15 },
+    continueText: { color: "#fff", fontWeight: "700", fontSize: 15},
+    loadingContainer:{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#0B0F16",
+    },
+    loadingText:{
+        color: "#fff",
+        fontSize: 20,
+        fontWeight: "700",
+        // marginBottom: 20,
+    },
+    loadingIcons:{
+    }
 });

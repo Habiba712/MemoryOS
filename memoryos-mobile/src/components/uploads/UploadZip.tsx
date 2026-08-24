@@ -51,28 +51,6 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
         setStepIndex((i) => Math.max(i - 1, 0));
     };
 
-    //     const countPosts = async (file: any, user: string) => {
-
-    //         if(!user) return;
-    //         //e need to unzip it here first then calculta the posts number of the one folder we gonna use.
-    //         const exportZipFile = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/insta/import`, {
-    //             method: 'POST',
-    //             body: JSON.stringify({
-    //                 instagramZip: file,
-    //                 userId: user,
-
-    //             }),
-    //             headers: {
-    //                 'Content-Type': 'application/zip',
-    //             },
-    //         });
-    //         console.log('exportZipFile', exportZipFile)
-    //         setExportZipFile(exportZipFile);
-
-
-
-    //     }
-
     useEffect(() => {
         (async () => {
             const raw = await SecureStore.getItemAsync('sessionData');
@@ -81,11 +59,7 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
         })();
     }, []);
 
-    //   useEffect(() => {
-    //     (async () => {
-    //       countPosts(zipFile, user);
-    //     })();
-    //   }, [zipFile, user]);
+ 
 
     console.log('user', user)
     return (
@@ -132,6 +106,7 @@ export default function ZipImportFlow({ onBack }: { onBack: () => void }) {
                         console.log('data', data)
 
                         setImportState((s) => ({ ...s, totalPosts: data.results.totalFound, posts: data.results.posts }));
+
                         goNext();
                     }}
 

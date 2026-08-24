@@ -8,5 +8,6 @@ const router = Router();
 
 router.post('/saveVideo',videoController.saveVideo);
 router.get('/getVideoFiles/:userId', videoController.getVideoFiles);
+router.get('/getOneVideoFile/:id', videoController.getOneVideoFile);
 
 module.exports = router;

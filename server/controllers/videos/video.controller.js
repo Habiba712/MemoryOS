@@ -119,4 +119,17 @@ videoController.getVideoFiles = async (req, res) => {
         res.status(500).json({ message: "Error getting videos", error: err.message });
     }
 }
+videoController.getOneVideoFile = async (req, res) => {
+    try {
+        const {id} = req.params;
+        console.log('id', id);
+        const video = await Video.findById(id);
+        // const videos = res.videos;
+        console.log('video', video);
+       res.status(200).json({ video });
+    } catch (err) {
+        console.log("Error getting videos:", err.message);
+        res.status(500).json({ message: "Error getting videos", error: err.message });
+    }
+}
 module.exports = videoController;

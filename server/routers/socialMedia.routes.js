@@ -11,6 +11,7 @@ const upload = multer({
 
 router.post("/import", upload.single("instagramZip"), 
 socialMediaController.unzip);
+router.post("/processPosts", socialMediaController.processPosts);
 
 
 

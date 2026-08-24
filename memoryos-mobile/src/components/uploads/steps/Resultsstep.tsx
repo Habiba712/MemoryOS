@@ -14,7 +14,7 @@ export default function ResultsStep({
     onDone: () => void;
     onBack: () => void;
 }) {
-    const { totalPosts, successCount, failedCount, failedThumbnails } = importState;
+    const { totalPosts, successCount, failedCount, failedThumbnails, chosenAmount } = importState;
     const hasFailed = failedCount > 0;
 
     return (
@@ -39,7 +39,7 @@ export default function ResultsStep({
                 <View style={styles.summaryBox}>
                     <Ionicons name="albums" size={16} color="#a78bfa" />
                     <Text style={styles.summaryLabel}>Total processed</Text>
-                    <Text style={styles.summaryValue}>{totalPosts.toLocaleString()}</Text>
+                    <Text style={styles.summaryValue}>{chosenAmount.toLocaleString()}</Text>
                 </View>
             </View>
 

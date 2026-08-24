@@ -263,7 +263,9 @@ function ResultRow({ item, index, muted = false }: { item: any; index: number; m
   const visual = getItemVisual(item);
   return (
     <AnimatedEntry index={index}>
-      <Pressy style={[styles.fileRow, muted && styles.fileRowMuted]} onPress={() => router.push(`/dashboard/files/${item._id}`)}>
+      <Pressy style={[styles.fileRow, muted && styles.fileRowMuted]} onPress={() =>{
+        console.log('item', item)
+        router.push(`/files/${item._id}`)}}>
         <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
           <Ionicons name={visual.icon as any} size={17} color={visual.color} />
         </View>

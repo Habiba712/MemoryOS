@@ -63,7 +63,7 @@ function Skeleton({ style }: { style?: any }) {
   return <Animated.View style={[styles.skeleton, style, { opacity: pulse }]} />;
 }
 
- 
+
 // A "link" item (from the urls collection) has no fileType — it has videoUrl/platform instead.
 function getItemVisual(item: any) {
   if (item.fileType === 'pdf') return { icon: 'document-text', bg: '#3a1a1a', color: '#ff6b6b' };
@@ -154,9 +154,7 @@ export default function HomeScreen() {
     router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  const sortedFiles = [...recentFiles].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  const sortedFiles = [...recentFiles]
 
   const QUICK_ACCESS_TILES = [
     { key: 'images', label: 'Images', icon: 'image', bg: '#0f2b2b', color: '#4fd1c5', count: quickAccess.images },
@@ -232,41 +230,57 @@ export default function HomeScreen() {
           </Pressable>
         </View>
 
- <View style={styles.filesList}>
+        <View style={styles.filesList}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : videoFiles.slice(0,5).map((file, i) => {
-              const visual = getItemVisual(file);
-              return (
-                <AnimatedEntry key={file._id} index={i}>
-                  <Pressy style={styles.fileRow} onPress={() => router.push(`/tabs/files/${file._id}`)}>
-                    <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
-                      <Ionicons name={file.platform === 'Instagram' ? 'logo-instagram' : 'logo-youtube'} size={17} color={visual.color} />
-                    </View>
-                    <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={styles.fileTitle} numberOfLines={1}>
-                        {file.title}
-                      </Text>
-                      <Text style={styles.fileMeta}>
-                        {timeAgo(file.createdAt)} · {file.category}
-                      </Text>
-                    </View>
-                    <Pressable hitSlop={10}>
-                      <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" />
-                    </Pressable>
-                  </Pressy>
-                </AnimatedEntry>
-              );
-            })}
+            : videoFiles.slice(0, 5)
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .map((file, i) => {
+                const visual = getItemVisual(file);
+                return (
+                  <AnimatedEntry key={file._id} index={i}>
+                    <Pressy style={styles.fileRow} onPress={() =>
+                      router.push({
+                        pathname: "/files/[id]",
+                        params: { id: file._id, type: "socials" },
+                      })
+                    }
+
+                    >
+                      <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
+                        <Ionicons name={file.platform === 'Instagram' ? 'logo-instagram' : 'logo-youtube'} size={17} color={visual.color} />
+                      </View>
+                      <View style={{ flex: 1, minWidth: 0 }}>
+                        <Text style={styles.fileTitle} numberOfLines={1}>
+                          {file.title}
+                        </Text>
+                        <Text style={styles.fileMeta}>
+                          {timeAgo(file.createdAt)} · {file.category}
+                        </Text>
+                      </View>
+                      <Pressable hitSlop={10}>
+                        <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" />
+                      </Pressable>
+                    </Pressy>
+                  </AnimatedEntry>
+                );
+              })}
         </View>
         <View style={styles.filesList}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : sortedFiles.slice(0,5).map((file, i) => {
+            : sortedFiles.slice(0, 5).map((file, i) => {
               const visual = getItemVisual(file);
               return (
                 <AnimatedEntry key={file._id} index={i}>
-                  <Pressy style={styles.fileRow} onPress={() => router.push(`/tabs/files/${file._id}`)}>
+                  <Pressy style={styles.fileRow}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/files/[id]",
+                        params: { id: file._id, type: "files" },
+                      })
+                    }
+                  >
                     <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
                       <Ionicons name={visual.icon as any} size={17} color={visual.color} />
                     </View>

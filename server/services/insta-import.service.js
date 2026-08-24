@@ -1,4 +1,6 @@
 const fs = require("fs");
+const path = require("path");
+const unzipper = require("unzipper");
 const cheerio = require("cheerio");
 
 const parseInstagramSavedPosts = (filePath) => {
@@ -43,9 +45,74 @@ const parseInstagramSavedPosts = (filePath) => {
     return posts;
 };
 
-const importInstagram = async (filePath, userId, limit = 10) => {
-    const posts = parseInstagramSavedPosts(filePath);
 
+const importInstagram = async (zipPath, userId) => {
+
+    console.log("ZIP received:", zipPath);
+
+     const extractDir = path.join(
+        path.dirname(zipPath),
+        `instagram-extract-${Date.now()}`
+    );
+
+    fs.mkdirSync(extractDir, { recursive: true });
+
+    try {
+
+        await fs.createReadStream(zipPath)
+            .pipe(unzipper.Extract({ path: extractDir }))
+            .promise();
+
+        console.log("ZIP extracted:", extractDir);
+
+
+
+        const savedHtmlPath = path.join(
+            extractDir,
+            "your_instagram_activity",
+            "saved",
+            "saved_posts.html"
+        );
+
+        console.log("Looking for:", savedHtmlPath);
+
+        if (!fs.existsSync(savedHtmlPath)) {
+            throw new Error(
+                "Could not find your_instagram_activity/saved/saved_posts.html inside the Instagram export."
+            );
+        }
+
+        console.log("✅ saved_posts.html found");
+
+        const posts = parseInstagramSavedPosts(savedHtmlPath);
+
+        console.log(`Found ${posts.length} saved Instagram posts`);
+
+
+        const results = {
+            posts,
+            totalFound: posts.length,
+            selected: posts.length,
+            successful: [],
+            failed: [],
+        };
+
+        return results;
+
+    } finally {
+
+        fs.rmSync(extractDir, {
+            recursive: true,
+            force: true,
+        });
+
+        console.log("🧹 Temporary Instagram files deleted");
+    }
+};
+
+
+
+const processingPosts = async (posts, userId, limit = 10) => {
     const results = {
         totalFound: posts.length,
         selected: 0,
@@ -54,7 +121,6 @@ const importInstagram = async (filePath, userId, limit = 10) => {
     };
 
     for (const post of posts) {
-        console.log('captiob', post.caption)
         // Stop once we have enough successful imports
         if (results.successful.length >= limit) {
             break;
@@ -115,13 +181,11 @@ const importInstagram = async (filePath, userId, limit = 10) => {
         }
     }
 
-    results.selected =
-        results.successful.length + results.failed.length;
-
     return results;
 };
 
 module.exports = {
     parseInstagramSavedPosts,
     importInstagram,
+    processingPosts,
 };

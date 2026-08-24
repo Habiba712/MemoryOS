@@ -30,6 +30,8 @@ export default function ProcessingStep({
     const [success, setSuccess] = useState(0);
     const [failed, setFailed] = useState(0);
     const spin = useRef(new Animated.Value(0)).current;
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [processingError, setProcessingError] = useState<string | null>(null);
 
     useEffect(() => {
         Animated.loop(
@@ -42,51 +44,93 @@ export default function ProcessingStep({
         ).start();
     }, []);
 
-    const processPosts = async () => {
-        const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/insta/processPosts`, {  
-            method: 'POST',
-            body: JSON.stringify({
-                posts: totalData.posts,
-                userId: user,
-                limit: totalData.chosenAmount,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
+const processPosts = async () => {
+    const selectedPosts = totalData.posts.slice(
+        0,
+        totalData.chosenAmount
+    );
+
+    const successfulPosts = [];
+    const failedPosts = [];
+
+    setProcessed(0);
+    setSuccess(0);
+    setFailed(0);
+
+    for (const post of selectedPosts) {
+        try {
+            console.log("Processing:", post.url);
+
+            const response = await fetch(
+                `${process.env.EXPO_PUBLIC_API_URL}/api/video/saveVideo`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        user,
+                        videoUrl: post.url,
+                        caption: post.caption,
+                    }),
+                }
+            );
+
+            if (response.ok) {
+                successfulPosts.push(post);
+
+                setSuccess(successfulPosts.length);
+
+                console.log(
+                    `✅ Successful: ${successfulPosts.length}`
+                );
+            } else {
+                setFailed(failedPosts.length);const errorText = await response.text();
+
+                failedPosts.push({
+                    post,
+                    error: errorText || response.statusText,
+                });
+
+                
+
+                console.log(
+                    `⏭️ Failed, skipping: ${post.url}`
+                );
+            }
+
+        } catch (error: any) {
+            failedPosts.push({
+                post,
+                error: error.message,
             });
-        const data = await res.json();
-        console.log('data', data)
-      
+
+            setFailed(failedPosts.length);
+
+            console.log(
+                `⏭️ Problematic post, skipping: ${post.url}`
+            );
+        }
+
+         setProcessed(
+            successfulPosts.length + failedPosts.length
+        );
     }
 
-    useEffect(() => {
-        if (totalData.chosenAmount <= 0) return;
-        const interval = setInterval(() => {
-            setProcessed((prev) => {
-                const next = Math.min(prev + Math.ceil(totalData.posts.length / 40), totalData.posts.length);
+    onDone({
+        processedCount:
+            successfulPosts.length + failedPosts.length,
+        successCount: successfulPosts.length,
+        failedCount: failedPosts.length,
+ 
+        failedThumbnails: [],
+    });
+};
+useEffect(() => {
+    if (totalData.chosenAmount <= 0) return;
 
-                const willFail = Math.random() < 0.07;
-                if (willFail) setFailed((f) => f + 1);
-                else setSuccess((s) => s + 1);
-
-                if (next >= totalData.chosenAmount) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        onDone({
-                            processedCount: next,
-                            successCount: success,
-                            failedCount: failed,
-                            failedThumbnails: [], // fill with real failed post thumbnails
-                        });
-                    }, 400);
-                }
-                return next;
-            });
-        }, 120);
-
-        return () => clearInterval(interval);
-    }, [totalData]);
-
+    processPosts();
+}, []);
     const pct = totalData.chosenAmount > 0 ? Math.round((processed / totalData.chosenAmount) * 100) : 0;
     const remaining = Math.max(totalData.chosenAmount - processed, 0);
 
@@ -97,9 +141,12 @@ export default function ProcessingStep({
 
     return (
         <View style={styles.container}>
-             <Pressable onPress={onBack} >
+            <View style={styles.backButtonContainer}>
+                  <Pressable onPress={onBack} >
                 <Ionicons name="arrow-back" size={22} color="#fff" />
             </Pressable>
+            </View>
+           
             <Text style={styles.header}>Importing your memories...</Text>
             <Text style={styles.subHeader}>
                 AI is working hard! You can see real-time progress and details.
@@ -154,7 +201,7 @@ export default function ProcessingStep({
                         <Ionicons name="sync" size={18} color="#a78bfa" />
                     </Animated.View>
                     <Text style={styles.currentText}>
-                        Post {Math.min(processed + 1, totalData.posts.length)} of {totalData.chosenAmount}: Analyzing image and caption...
+                       Post {Math.min(processed + 1, totalData.chosenAmount)} of {totalData.chosenAmount}
                     </Text>
                 </View>
             </View>
@@ -214,5 +261,6 @@ const styles = StyleSheet.create({
         gap: 8,
         width: "100%",
     },
+    backButtonContainer:{width:"100%", justifyContent:"flex-start"},
     noteText: { color: "#c9b8f5", fontSize: 11.5, flex: 1, flexWrap: "wrap" },
 });
