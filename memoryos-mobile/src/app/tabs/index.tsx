@@ -238,9 +238,11 @@ export default function HomeScreen() {
          
           <Pressable
             onPress={() =>
-              setViewMode((current) =>
+             { setViewMode((current) =>
                 current === "list" ? "grid" : "list"
               )
+
+              console.log('current', viewMode)}
             }
           >
             <Ionicons
@@ -261,7 +263,7 @@ export default function HomeScreen() {
                 const visual = getItemVisual(file);
                 return (
                   <AnimatedEntry key={file._id} index={i}>
-                    <Pressy style={[styles.fileRow, viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
+                    <Pressy style={[viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
                       router.push({
                         pathname: "/files/[id]",
                         params: { id: file._id, type: "socials" },
@@ -269,20 +271,27 @@ export default function HomeScreen() {
                     }
 
                     >
-                      <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : { borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
+                      <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : {  
+   
+    position: "relative",borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
                         <Image
                           style={[viewMode === "grid" ? styles.fileThumbnail : { width: 70, height: 70, borderRadius: 10}]}
-                          source={{ uri: file.thumbnailUrl }}
+                          source={{ uri: file.thumbnailUrl || file.url }}
                           resizeMode="cover"
                         />
-                        <View style={[styles.fileIcon,{ backgroundColor: visual.bg, opacity: 0.8, borderRadius: 10, width:20, height:20}, viewMode === "grid" ? {} : {top: 60, left: 15, right: 10, bottom: 0}]}>
-                           <Ionicons name={visual.icon as any} size={17}
+                        <View style={[viewMode === "list" ? {opacity: 0.8,width: 20, height: 20,position: "absolute",top: 47, left: 3, right: 10, bottom: 0, borderRadius: 10} : {opacity: 0.8,width: 30, height: 30, position: "absolute", top: 117, left: 5, right: 10, bottom: 0, backgroundColor:visual.bg, borderRadius: 10}]}>
+                           <Ionicons name={visual.icon as any} size={viewMode === "list" ? 20 : 30} 
+                           style={viewMode === "list"  ? {opacity: 0.8, borderRadius: 5, display:"flex", justifyContent: "center", alignItems: "center"} : {opacity: 0.8,borderRadius: 10, display:"flex", justifyContent: "center", alignItems: "center"}}
+                           backgroundColor={visual.bg}
+                          
                             color={visual.color} /> 
                         </View>
                         
                       </View>
-                      <View style={[viewMode === "grid" ? styles.fileInfoContainer : {display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderWidth: 1, borderColor: "#1f2740",borderRadius: 14, padding: 12}]}>
-                        <View>
+                      <View style={[viewMode === "grid" ? styles.fileInfoContainer : {width: "80%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderRadius: 14, paddingRight:10}]}>
+                        <View style={viewMode === "list" ? {display: "flex", flexDirection: "column", justifyContent: "space-between", gap:5,alignItems: "flex-start",} :
+                          {display: "flex", flexDirection: "column", justifyContent: "flex-start", gap:5,alignItems: "flex-start", paddingHorizontal: 10, paddingVertical: 15}
+                        }>
                            <Text style={styles.fileTitle} numberOfLines={1}>
                           {file.title}
                         </Text>
@@ -311,8 +320,8 @@ export default function HomeScreen() {
             : sortedFiles.slice(0, 5).map((file, i) => {
               const visual = getItemVisual(file);
               return (
-           <AnimatedEntry key={file._id} index={i}>
-                    <Pressy style={[styles.fileRow, viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
+          <AnimatedEntry key={file._id} index={i}>
+                    <Pressy style={[viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
                       router.push({
                         pathname: "/files/[id]",
                         params: { id: file._id, type: "socials" },
@@ -320,26 +329,38 @@ export default function HomeScreen() {
                     }
 
                     >
-                      <View style={styles.fileThumbnailContainer}>
+                      <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : {  
+   
+    position: "relative",borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
                         <Image
-                          style={styles.fileThumbnail}
+                          style={[viewMode === "grid" ? styles.fileThumbnail : { width: 70, height: 70, borderRadius: 10}]}
                           source={{ uri: file.thumbnailUrl || file.url }}
                           resizeMode="cover"
                         />
-                            <View style={[styles.fileIcon, { backgroundColor: visual.bg, opacity: 0.8 }]}>
-                           <Ionicons name={visual.icon as any} size={17} color={visual.color} /> 
+                        <View style={[viewMode === "list" ? {opacity: 0.8,width: 20, height: 20,position: "absolute",top: 47, left: 3, right: 10, bottom: 0, borderRadius: 10} : {opacity: 0.8,width: 30, height: 30, position: "absolute", top: 117, left: 5, right: 10, bottom: 0, backgroundColor:visual.bg, borderRadius: 10}]}>
+                           <Ionicons name={visual.icon as any} size={viewMode === "list" ? 20 : 30} 
+                           style={viewMode === "list"  ? {opacity: 0.8, borderRadius: 5, display:"flex", justifyContent: "center", alignItems: "center"} : {opacity: 0.8,borderRadius: 10, display:"flex", justifyContent: "center", alignItems: "center"}}
+                           backgroundColor={visual.bg}
+                          
+                            color={visual.color} /> 
                         </View>
+                        
                       </View>
-                      <View style={styles.fileInfoContainer}>
-                        <Text style={styles.fileTitle} numberOfLines={1}>
+                      <View style={[viewMode === "grid" ? styles.fileInfoContainer : {width: "80%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderRadius: 14, paddingRight:10}]}>
+                        <View style={viewMode === "list" ? {display: "flex", flexDirection: "column", justifyContent: "space-between", gap:5,alignItems: "flex-start",} :
+                          {display: "flex", flexDirection: "column", justifyContent: "flex-start", gap:5,alignItems: "flex-start", paddingHorizontal: 10, paddingVertical: 15}
+                        }>
+                           <Text style={styles.fileTitle} numberOfLines={1}>
                           {file.title}
                         </Text>
                         <Text style={styles.fileMeta}>
                           {timeAgo(file.createdAt)} · {file.category}
                         </Text>
-                         {/* <Pressable hitSlop={10}>
+                        </View>
+                       
+                          <Pressable hitSlop={10} style={viewMode === "grid" ? {display: "none"} : {}}>
                         <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" /> 
-                      </Pressable>*/}
+                      </Pressable>
                       </View>
 
                     </Pressy>
@@ -403,7 +424,7 @@ const styles = StyleSheet.create({
   filesList: { gap: 8, paddingBottom: 50 },
   fileRowSkeleton: { height: 62, borderRadius: 14 },
   fileRow: {
-    flexDirection: 'row', alignItems: 'center',justifyContent:'flex-start', gap: 12, backgroundColor: '#141a2b',
+    flexDirection: 'row', alignItems: 'flex-start',justifyContent:'flex-start', gap: 12, backgroundColor: '#141a2b',
     borderWidth: 1, borderColor: '#1f2740', borderRadius: 14, padding: 12,
   },
 
@@ -439,6 +460,7 @@ const styles = StyleSheet.create({
     // gap: 12,
     flexGrow: 1,
     width: 180,
+    padding: 12,
 
 
   },
