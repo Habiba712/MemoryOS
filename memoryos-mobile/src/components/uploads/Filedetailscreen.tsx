@@ -12,8 +12,7 @@ export type MemoryFile = {
     title: string;
     size: string; // e.g. "2.4 MB"
     date: string; // e.g. "May 13, 2024"
-    videoUrl?: string; // image/reel thumbnail source — not needed for pdf
-    // pdf-only preview fields, since we can't render a real PDF inline here
+    videoUrl?: string;
     pdfPreview?: {
         title: string;
         subtitle?: string;
@@ -26,7 +25,6 @@ export type MemoryFile = {
     summary?: string;
     tags?: string[];
     category?: string;
-
 };
 
 export default function FileDetailScreen({
@@ -44,8 +42,13 @@ export default function FileDetailScreen({
     onRename: () => void;
     onDelete: () => void;
 }) {
+    // Only worth rendering a section if there's something real to show —
+    // an empty AI summary box with no content is just dead space.
+    const hasSummary = !!file.summary?.trim();
+    const hasDescription = !!file.aiDescription?.trim();
+    const hasTags = !!file.tags && file.tags.length > 0;
+    const hasCategory = !!file.category?.trim();
 
-    console.log('file',file);
     return (
         <View style={styles.container}>
             <View style={styles.topBar}>
@@ -53,7 +56,7 @@ export default function FileDetailScreen({
                     <Ionicons name="arrow-back" size={20} color="#fff" />
                 </Pressable>
                 <Text style={styles.topTitle} numberOfLines={1}>
-                    {file.title || 'title'}
+                    {file.title || "title"}
                 </Text>
                 <Pressable style={styles.iconButton}>
                     <Ionicons name="ellipsis-horizontal" size={20} color="#fff" />
@@ -64,7 +67,7 @@ export default function FileDetailScreen({
                 <View style={styles.previewCard}>
                     {file.fileType === "image" && (
                         <Image
-                            source={{uri: file.thumbnailUrl}}
+                            source={{ uri: file.thumbnailUrl }}
                             style={styles.imagePreview}
                             resizeMode="cover"
                         />
@@ -82,7 +85,8 @@ export default function FileDetailScreen({
                             </View>
                         </View>
                     )}
-                     {file.fileType === "Instagram" && (
+
+                    {file.fileType === "Instagram" && (
                         <View style={styles.reelPreview}>
                             <Image
                                 source={{ uri: file.thumbnailUrl }}
@@ -121,6 +125,7 @@ export default function FileDetailScreen({
                     )}
                 </View>
 
+                {/* Title / size / date row */}
                 <View style={styles.infoRow}>
                     <View style={styles.fileBadge}>
                         {file.fileType === "pdf" ? (
@@ -142,7 +147,7 @@ export default function FileDetailScreen({
                             {file.title}
                         </Text>
                         <Text style={styles.fileMeta}>
-                            {file.size || '0.0'} • {file.date}
+                            {file.size || "0.0"} • {file.date}
                         </Text>
                     </View>
                     <Pressable style={styles.iconButton}>
@@ -150,37 +155,48 @@ export default function FileDetailScreen({
                     </Pressable>
                 </View>
 
-                   <View style={styles.infoRow}>
-                    
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.fileName} numberOfLines={1}>
-                            AI summary
-                        </Text>
-                        <Text style={styles.fileMeta}>
-                            {file.summary || '0.0'}
-                        </Text>
+                {/* Category + tags — only rendered if there's real data */}
+                {(hasCategory || hasTags) && (
+                    <View style={styles.metaCard}>
+                        {hasCategory && (
+                            <View style={styles.categoryPill}>
+                                <Ionicons name="pricetag" size={12} color="#a78bfa" />
+                                <Text style={styles.categoryText}>{file.category}</Text>
+                            </View>
+                        )}
+                        {hasTags && (
+                            <View style={styles.tagsRow}>
+                                {file.tags!.map((tag, i) => (
+                                    <View key={i} style={styles.tagChip}>
+                                        <Text style={styles.tagText}>{tag}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        )}
                     </View>
-                    <Pressable style={styles.iconButton}>
-                        <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
-                    </Pressable>
-                </View>
-                
-                   <View style={styles.infoRow}>
-                    
-                    <View style={{ flex: 1 }}>
-                        <Text style={styles.fileName} numberOfLines={1}>
-                            AI description
-                        </Text>
-                        <Text style={styles.fileMeta}>
-                            {file.aiDescription || ""}
-                        </Text>
-                    </View>
-                    <Pressable style={styles.iconButton}>
-                        <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
-                    </Pressable>
-                </View>
-                
+                )}
 
+                {/* AI summary — hidden entirely if not present */}
+                {hasSummary && (
+                    <View style={styles.aiCard}>
+                        <View style={styles.aiHeader}>
+                            <Ionicons name="sparkles" size={14} color="#a78bfa" />
+                            <Text style={styles.aiLabel}>AI summary</Text>
+                        </View>
+                        <Text style={styles.aiText}>{file.summary}</Text>
+                    </View>
+                )}
+
+                {/* AI description — hidden entirely if not present */}
+                {hasDescription && (
+                    <View style={styles.aiCard}>
+                        <View style={styles.aiHeader}>
+                            <Ionicons name="document-text-outline" size={14} color="#a78bfa" />
+                            <Text style={styles.aiLabel}>AI description</Text>
+                        </View>
+                        <Text style={styles.aiText}>{file.aiDescription}</Text>
+                    </View>
+                )}
 
                 <View style={styles.actionsRow}>
                     <ActionButton icon="share-outline" label="Share" onPress={onShare} />
@@ -281,7 +297,7 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 12,
         gap: 12,
-        marginBottom: 18,
+        marginBottom: 14,
     },
     fileBadge: {},
     badgeIcon: {
@@ -294,6 +310,50 @@ const styles = StyleSheet.create({
     badgeIconText: { color: "#fff", fontSize: 10, fontWeight: "800" },
     fileName: { color: "#fff", fontSize: 14, fontWeight: "700" },
     fileMeta: { color: "#8a94a8", fontSize: 11.5, marginTop: 2 },
+
+    metaCard: {
+        backgroundColor: "#141a2b",
+        borderWidth: 1,
+        borderColor: "#1f2740",
+        borderRadius: 16,
+        padding: 14,
+        marginBottom: 14,
+        gap: 10,
+    },
+    categoryPill: {
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        backgroundColor: "#1e1730",
+        borderRadius: 20,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        gap: 6,
+    },
+    categoryText: { color: "#a78bfa", fontSize: 11.5, fontWeight: "700" },
+    tagsRow: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+    tagChip: {
+        backgroundColor: "#1a2033",
+        borderWidth: 1,
+        borderColor: "#2a3352",
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+    },
+    tagText: { color: "#c9d3e0", fontSize: 11.5, fontWeight: "500" },
+
+    aiCard: {
+        backgroundColor: "#171225",
+        borderWidth: 1,
+        borderColor: "#2a2140",
+        borderRadius: 16,
+        padding: 14,
+        marginBottom: 14,
+    },
+    aiHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 },
+    aiLabel: { color: "#a78bfa", fontSize: 12, fontWeight: "700" },
+    aiText: { color: "#c9d3e0", fontSize: 12.5, lineHeight: 19 },
+
     actionsRow: {
         flexDirection: "row",
         backgroundColor: "#141a2b",
@@ -301,6 +361,7 @@ const styles = StyleSheet.create({
         borderColor: "#1f2740",
         borderRadius: 16,
         paddingVertical: 14,
+        marginTop: 4,
     },
     actionButton: { flex: 1, alignItems: "center", gap: 6 },
     actionLabel: { color: "#fff", fontSize: 11.5, fontWeight: "600" },

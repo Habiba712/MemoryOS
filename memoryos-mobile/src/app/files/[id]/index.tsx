@@ -4,6 +4,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import FileDetailScreen, { MemoryFile } from "@/components/uploads/Filedetailscreen";
 import { Share } from "react-native";
+import { FaInstagram, FaYoutube } from "react-icons/fa";
+
 
 // Whatever shape your backend actually returns for a single file.
 // Adjust field names to match your real API response.

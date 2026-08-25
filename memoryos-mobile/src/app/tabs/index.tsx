@@ -10,10 +10,12 @@ import {
   SafeAreaView,
   Animated,
   Easing,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { Ionicons } from '@expo/vector-icons';
+// import { FaInstagram, FaYoutube } from "react-icons/fa";
 
 
 
@@ -69,7 +71,9 @@ function getItemVisual(item: any) {
   if (item.fileType === 'pdf') return { icon: 'document-text', bg: '#3a1a1a', color: '#ff6b6b' };
   if (item.fileType === 'image') return { icon: 'image', bg: '#0f2b2b', color: '#4fd1c5' };
   if (item.fileType === 'video') return { icon: 'play', bg: '#1c1230', color: '#a685ff' };
+  if (item.platform === "Instagram") return {icon: 'logo-instagram', bg: '#3a1a33', color: '#e35bb8'};
   if (item.videoUrl || item.platform) return { icon: 'link', bg: '#0f2b2b', color: '#4fd1c5' };
+  
   return { icon: 'document', bg: '#1a1f2e', color: '#9aa4b8' };
 }
 
@@ -95,6 +99,7 @@ export default function HomeScreen() {
   const [videoFiles, setVideoFiles] = useState<any[]>([]);
   const [quickAccess, setQuickAccess] = useState({ images: 0, documents: 0, links: 0, others: 0 });
   const [userName, setUserName] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
   const loadDashboard = useCallback(async () => {
     if (!userId) return;
@@ -204,6 +209,7 @@ export default function HomeScreen() {
           <Pressable onPress={() => router.push('/tabs/files')}>
             <Text style={styles.viewAll}>See all</Text>
           </Pressable>
+
         </View>
 
         <View style={styles.quickAccessRow}>
@@ -224,13 +230,29 @@ export default function HomeScreen() {
 
         {/* Recent Files */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Files</Text>
-          <Pressable onPress={() => router.push('/tabs/files')}>
-            <Text style={styles.viewAll}>See all</Text>
+          <View style={styles.titleSection}>
+             <Text style={styles.sectionTitle}>Recent Files</Text>
+          <Text style={styles.sectionSubTitle}>From social Media</Text>
+
+          </View>
+         
+          <Pressable
+            onPress={() =>
+              setViewMode((current) =>
+                current === "list" ? "grid" : "list"
+              )
+            }
+          >
+            <Ionicons
+              name={viewMode === "list" ? "grid-outline" : "list-outline"}
+              size={22}
+              color="#fff"
+            />
           </Pressable>
         </View>
+        
 
-        <View style={styles.filesList}>
+        <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
             : videoFiles.slice(0, 5)
@@ -239,7 +261,7 @@ export default function HomeScreen() {
                 const visual = getItemVisual(file);
                 return (
                   <AnimatedEntry key={file._id} index={i}>
-                    <Pressy style={styles.fileRow} onPress={() =>
+                    <Pressy style={[styles.fileRow, viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
                       router.push({
                         pathname: "/files/[id]",
                         params: { id: file._id, type: "socials" },
@@ -247,56 +269,81 @@ export default function HomeScreen() {
                     }
 
                     >
-                      <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
-                        <Ionicons name={file.platform === 'Instagram' ? 'logo-instagram' : 'logo-youtube'} size={17} color={visual.color} />
+                      <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : { borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
+                        <Image
+                          style={[viewMode === "grid" ? styles.fileThumbnail : { width: 70, height: 70, borderRadius: 10}]}
+                          source={{ uri: file.thumbnailUrl }}
+                          resizeMode="cover"
+                        />
+                        <View style={[styles.fileIcon,{ backgroundColor: visual.bg, opacity: 0.8, borderRadius: 10, width:20, height:20}, viewMode === "grid" ? {} : {top: 60, left: 15, right: 10, bottom: 0}]}>
+                           <Ionicons name={visual.icon as any} size={17}
+                            color={visual.color} /> 
+                        </View>
+                        
                       </View>
-                      <View style={{ flex: 1, minWidth: 0 }}>
+                      <View style={[viewMode === "grid" ? styles.fileInfoContainer : {display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderWidth: 1, borderColor: "#1f2740",borderRadius: 14, padding: 12}]}>
+                        <View>
+                           <Text style={styles.fileTitle} numberOfLines={1}>
+                          {file.title}
+                        </Text>
+                        <Text style={styles.fileMeta}>
+                          {timeAgo(file.createdAt)} · {file.category}
+                        </Text>
+                        </View>
+                       
+                          <Pressable hitSlop={10} style={viewMode === "grid" ? {display: "none"} : {}}>
+                        <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" /> 
+                      </Pressable>
+                      </View>
+
+                    </Pressy>
+                  </AnimatedEntry>
+                );
+              })}
+        </View>
+           <View style={styles.titleSection}>
+          <Text style={[styles.sectionSubTitle, { marginVertical: 12 }]}>Other Sources</Text>
+
+          </View>
+        <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
+          {loading
+            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
+            : sortedFiles.slice(0, 5).map((file, i) => {
+              const visual = getItemVisual(file);
+              return (
+           <AnimatedEntry key={file._id} index={i}>
+                    <Pressy style={[styles.fileRow, viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
+                      router.push({
+                        pathname: "/files/[id]",
+                        params: { id: file._id, type: "socials" },
+                      })
+                    }
+
+                    >
+                      <View style={styles.fileThumbnailContainer}>
+                        <Image
+                          style={styles.fileThumbnail}
+                          source={{ uri: file.thumbnailUrl || file.url }}
+                          resizeMode="cover"
+                        />
+                            <View style={[styles.fileIcon, { backgroundColor: visual.bg, opacity: 0.8 }]}>
+                           <Ionicons name={visual.icon as any} size={17} color={visual.color} /> 
+                        </View>
+                      </View>
+                      <View style={styles.fileInfoContainer}>
                         <Text style={styles.fileTitle} numberOfLines={1}>
                           {file.title}
                         </Text>
                         <Text style={styles.fileMeta}>
                           {timeAgo(file.createdAt)} · {file.category}
                         </Text>
+                         {/* <Pressable hitSlop={10}>
+                        <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" /> 
+                      </Pressable>*/}
                       </View>
-                      <Pressable hitSlop={10}>
-                        <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" />
-                      </Pressable>
+
                     </Pressy>
                   </AnimatedEntry>
-                );
-              })}
-        </View>
-        <View style={styles.filesList}>
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : sortedFiles.slice(0, 5).map((file, i) => {
-              const visual = getItemVisual(file);
-              return (
-                <AnimatedEntry key={file._id} index={i}>
-                  <Pressy style={styles.fileRow}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/files/[id]",
-                        params: { id: file._id, type: "files" },
-                      })
-                    }
-                  >
-                    <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
-                      <Ionicons name={visual.icon as any} size={17} color={visual.color} />
-                    </View>
-                    <View style={{ flex: 1, minWidth: 0 }}>
-                      <Text style={styles.fileTitle} numberOfLines={1}>
-                        {file.title}
-                      </Text>
-                      <Text style={styles.fileMeta}>
-                        {timeAgo(file.createdAt)} · {file.category}
-                      </Text>
-                    </View>
-                    <Pressable hitSlop={10}>
-                      <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" />
-                    </Pressable>
-                  </Pressy>
-                </AnimatedEntry>
               );
             })}
         </View>
@@ -337,7 +384,9 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, fontSize: 13.5, color: '#fff' },
 
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  sectionTitle: { fontSize: 14, fontWeight: '600', color: '#fff' },
+  titleSection: { flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start'},
+  sectionTitle: { fontSize: 14, fontWeight: '600', color: '#fff', marginBottom: 10  },
+  sectionSubTitle: { fontSize: 11.5, fontWeight:'600',color: '#8b93a7'},
   viewAll: { fontSize: 12, color: '#4d9cff' },
 
   quickAccessRow: { flexDirection: 'row', gap: 8, marginBottom: 26 },
@@ -354,12 +403,56 @@ const styles = StyleSheet.create({
   filesList: { gap: 8, paddingBottom: 50 },
   fileRowSkeleton: { height: 62, borderRadius: 14 },
   fileRow: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#141a2b',
+    flexDirection: 'row', alignItems: 'center',justifyContent:'flex-start', gap: 12, backgroundColor: '#141a2b',
     borderWidth: 1, borderColor: '#1f2740', borderRadius: 14, padding: 12,
   },
-  fileIcon: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+
+  fileIcon: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center', position: "absolute", top: 100, left: 10, right: 10, bottom: 0},
   fileTitle: { fontSize: 13.5, fontWeight: '600', color: '#fff', marginBottom: 2 },
+  fileInfoContainer:{
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  width: "100%",
+},
   fileMeta: { fontSize: 11.5, color: '#5c667a' },
 
   skeleton: { backgroundColor: '#141a2b' },
+  fileCol: {
+    flexDirection: "row",
+    // borderWidth: 1,
+    // borderColor: "#1f2740",
+    flexWrap: "wrap",
+    width: "100%",
+    gap: 12,
+    justifyContent: "space-between",
+
+  },
+  fileColItem: {
+
+    borderWidth: 1,
+    borderColor: "#1f2740",
+    borderRadius: 14,
+    display: "flex",
+    flexDirection: "column",
+    // gap: 12,
+    flexGrow: 1,
+    width: 180,
+
+
+  },
+  fileThumbnailContainer:{
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    position: "relative",
+  },
+  fileThumbnail: {
+  width: 150,
+  height: 150,
+  borderRadius: 10,
+},
 });
