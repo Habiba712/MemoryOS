@@ -10,6 +10,7 @@ import {
   Animated,
   Easing,
   LayoutChangeEvent,
+  Image,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -261,13 +262,20 @@ export default function SearchScreen() {
 
 function ResultRow({ item, index, muted = false }: { item: any; index: number; muted?: boolean }) {
   const visual = getItemVisual(item);
+  console.log('item', item.thumbnailUrl)
   return (
     <AnimatedEntry index={index}>
       <Pressy style={[styles.fileRow, muted && styles.fileRowMuted]} onPress={() =>{
         console.log('item', item.title)
         router.push(`/files/${item._id}`)}}>
-        <View style={[styles.fileIcon, { backgroundColor: visual.bg }]}>
-          <Ionicons name={visual.icon as any} size={17} color={visual.color} />
+        <View style={[styles.fileIcon]}>
+          {
+            item.url || item.thumbnailUrl ?   <Image source={{ uri: item.thumbnailUrl || item.url }}
+                          resizeMode="cover" style={{width:45, height:45, borderRadius: 10}}/>
+                          : <Ionicons name={visual.icon as any} size={17} color={visual.color} /> 
+          }
+        
+          
         </View>
         <View style={{ flex: 1, minWidth: 0 }}>
           <Text style={[styles.fileTitle, muted && styles.fileTitleMuted]} numberOfLines={2}>

@@ -48,6 +48,7 @@ export default function FileDetailScreen({
     const hasDescription = !!file.aiDescription?.trim();
     const hasTags = !!file.tags && file.tags.length > 0;
     const hasCategory = !!file.category?.trim();
+    console.log('file', file.thumbnailUrl)
 
     return (
         <View style={styles.container}>
@@ -65,15 +66,15 @@ export default function FileDetailScreen({
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.previewCard}>
-                    {file.fileType === "image" && (
+                   
                         <Image
                             source={{ uri: file.thumbnailUrl }}
                             style={styles.imagePreview}
                             resizeMode="cover"
                         />
-                    )}
+                
 
-                    {file.fileType === "reel" && (
+                    {/* {file.fileType === "reel" && (
                         <View style={styles.reelPreview}>
                             <Image
                                 source={{ uri: file.uri }}
@@ -97,7 +98,7 @@ export default function FileDetailScreen({
                                 <Ionicons name="play" size={26} color="#fff" />
                             </View>
                         </View>
-                    )}
+                    )} */}
 
                     {file.fileType === "pdf" && (
                         <View style={styles.pdfPreview}>

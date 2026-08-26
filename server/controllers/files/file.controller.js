@@ -4,6 +4,7 @@
 const mongoose = require("mongoose");
 const cloudinary = require("../../config/cloudinary");
 const File = require("../../models/file.model")
+const Video = require("../../models/video.model")
 const streamifier = require("streamifier");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
@@ -282,7 +283,22 @@ fileController.getFiles = async (req, res) => {
         ]
     )
 
-    res.status(200).json(files);
+    const videos = await Video.aggregate(
+        [
+            {
+                $vectorSearch:{
+                    index:"vector_index",
+                    path:"embedding",
+                    queryVector:queryEmbedding,
+                    numCandidates: 100,
+                    limit: 10
+                }
+            }
+        ]
+    )
+    const results = [...files, ...videos];
+
+    res.status(200).json(results);
 }
 
 fileController.getFilesByUser = async (req, res) => {

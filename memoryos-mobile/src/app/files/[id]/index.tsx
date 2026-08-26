@@ -25,6 +25,7 @@ type ApiFile = {
     summary?: string;
     tags?: string[];
     category?: string;
+    embedding?: number[];
 };
 
 function formatBytes(bytes: number) {
@@ -91,8 +92,11 @@ export default function FilePage() {
             }
 
             const data: ApiFile = await response.json();
+            const { embedding, ...dataWithoutEmbedding } = data;
 
-            console.log("FINAL DATA:", data.size);
+console.log("FINAL DATA:", dataWithoutEmbedding);
+
+            
 
             setFile({
                 fileType: data.fileType || data.platform || "Other",

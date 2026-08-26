@@ -159,7 +159,9 @@ export default function HomeScreen() {
     router.push(`/search?q=${encodeURIComponent(query)}`);
   };
 
-  const sortedFiles = [...recentFiles]
+const sortedFiles = [...recentFiles].sort(
+  (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+);
 
   const QUICK_ACCESS_TILES = [
     { key: 'images', label: 'Images', icon: 'image', bg: '#0f2b2b', color: '#4fd1c5', count: quickAccess.images },
@@ -232,9 +234,10 @@ export default function HomeScreen() {
         <View style={styles.sectionHeader}>
           <View style={styles.titleSection}>
              <Text style={styles.sectionTitle}>Recent Files</Text>
-          <Text style={styles.sectionSubTitle}>From social Media</Text>
 
           </View>
+          
+
          
           <Pressable
             onPress={() =>
@@ -254,70 +257,12 @@ export default function HomeScreen() {
         </View>
         
 
-        <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
-          {loading
-            ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : videoFiles.slice(0, 5)
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-              .map((file, i) => {
-                const visual = getItemVisual(file);
-                return (
-                  <AnimatedEntry key={file._id} index={i}>
-                    <Pressy style={[viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
-                      router.push({
-                        pathname: "/files/[id]",
-                        params: { id: file._id, type: "socials" },
-                      })
-                    }
-
-                    >
-                      <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : {  
+ 
    
-    position: "relative",borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
-                        <Image
-                          style={[viewMode === "grid" ? styles.fileThumbnail : { width: 70, height: 70, borderRadius: 10}]}
-                          source={{ uri: file.thumbnailUrl || file.url }}
-                          resizeMode="cover"
-                        />
-                        <View style={[viewMode === "list" ? {opacity: 0.8,width: 20, height: 20,position: "absolute",top: 47, left: 3, right: 10, bottom: 0, borderRadius: 10} : {opacity: 0.8,width: 30, height: 30, position: "absolute", top: 117, left: 5, right: 10, bottom: 0, backgroundColor:visual.bg, borderRadius: 10}]}>
-                           <Ionicons name={visual.icon as any} size={viewMode === "list" ? 20 : 30} 
-                           style={viewMode === "list"  ? {opacity: 0.8, borderRadius: 5, display:"flex", justifyContent: "center", alignItems: "center"} : {opacity: 0.8,borderRadius: 10, display:"flex", justifyContent: "center", alignItems: "center"}}
-                           backgroundColor={visual.bg}
-                          
-                            color={visual.color} /> 
-                        </View>
-                        
-                      </View>
-                      <View style={[viewMode === "grid" ? styles.fileInfoContainer : {width: "80%", display: "flex", flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", borderRadius: 14, paddingRight:10}]}>
-                        <View style={viewMode === "list" ? {display: "flex", flexDirection: "column", justifyContent: "space-between", gap:5,alignItems: "flex-start",} :
-                          {display: "flex", flexDirection: "column", justifyContent: "flex-start", gap:5,alignItems: "flex-start", paddingHorizontal: 10, paddingVertical: 15}
-                        }>
-                           <Text style={styles.fileTitle} numberOfLines={1}>
-                          {file.title}
-                        </Text>
-                        <Text style={styles.fileMeta}>
-                          {timeAgo(file.createdAt)} · {file.category}
-                        </Text>
-                        </View>
-                       
-                          <Pressable hitSlop={10} style={viewMode === "grid" ? {display: "none"} : {}}>
-                        <Ionicons name="ellipsis-vertical" size={16} color="#5c667a" /> 
-                      </Pressable>
-                      </View>
-
-                    </Pressy>
-                  </AnimatedEntry>
-                );
-              })}
-        </View>
-           <View style={styles.titleSection}>
-          <Text style={[styles.sectionSubTitle, { marginVertical: 12 }]}>Other Sources</Text>
-
-          </View>
         <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : sortedFiles.slice(0, 5).map((file, i) => {
+            : sortedFiles.slice(0, 6).map((file, i) => {
               const visual = getItemVisual(file);
               return (
           <AnimatedEntry key={file._id} index={i}>
@@ -367,7 +312,11 @@ export default function HomeScreen() {
                   </AnimatedEntry>
               );
             })}
+              
+          <Text style={styles.viewAll}>See all</Text>
+        
         </View>
+       
       </ScrollView>
     </SafeAreaView>
   );
@@ -383,6 +332,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 8,
     paddingBottom: 40,
+    marginBottom: 50,
 
   },
 
@@ -408,7 +358,7 @@ const styles = StyleSheet.create({
   titleSection: { flexDirection: 'column', justifyContent: 'space-between', alignItems: 'flex-start'},
   sectionTitle: { fontSize: 14, fontWeight: '600', color: '#fff', marginBottom: 10  },
   sectionSubTitle: { fontSize: 11.5, fontWeight:'600',color: '#8b93a7'},
-  viewAll: { fontSize: 12, color: '#4d9cff' },
+  viewAll: { fontSize: 15, color: '#4d9cff',  textAlign:"right",paddingHorizontal: 10, paddingVertical: 5, borderRadius: 14, width:"100%"},
 
   quickAccessRow: { flexDirection: 'row', gap: 8, marginBottom: 26 },
   quickTileWrap: { flex: 1 },
@@ -448,6 +398,7 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
     justifyContent: "space-between",
+    paddingBottom: 50
 
   },
   fileColItem: {

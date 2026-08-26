@@ -9,112 +9,168 @@ const fileSchema = new mongoose.Schema(
       index: true,
     },
 
-    // --- Cloudinary storage info ---
+    // -------------------------
+    // Basic content information
+    // -------------------------
+
     originalName: {
       type: String,
-      required: true,
       trim: true,
-    },
-    publicId: {
-      // Cloudinary's asset identifier — needed for delete/transform operations
-      type: String,
-      required: true,
-      unique: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
-    thumbnailUrl: {
-      // Cheaper to render in search results/grids than the full file
-      type: String,
-        required: false
+      required: false,
     },
 
-    // --- File classification ---
+    title: {
+      type: String,
+      default: "",
+    },
+
     fileType: {
       type: String,
-      enum: ["image", "pdf", "document"],
+      enum: ["image", "pdf", "document", "video", "reel", "other"],
       required: true,
-    },
-    sourceType: {
-  type: String,
-  enum: ["file", "url"],
-  default: "file",
-  required: true,
-},
-    title: {
-        type: String,
-        required: false
-    },
-    mimeType: {
-      type: String,
-      required: true, // e.g. "image/png", "application/pdf"
-    },
-    favorite :{
-        type: Boolean,
-        default: false
-    },
-    size: {
-      type: Number, // bytes
-      required: true,
-    },
-    aiDescription: {
-        type: String,
-        required: false
     },
 
-    // --- Semantic search core ---
+    sourceType: {
+      type: String,
+      enum: ["file", "url"],
+      default: "file",
+      required: true,
+    },
+
+    // Where the content is stored / original URL
+    url: {
+      type: String,
+      required: false,
+    },
+
+    mimeType: {
+      type: String,
+      required: false,
+    },
+
+    size: {
+      type: Number,
+      required: false,
+    },
+
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+
+    // -------------------------
+    // Cloudinary metadata
+    // Optional because URL-imported content
+    // may not have Cloudinary data
+    // -------------------------
+
+    publicId: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+    },
+
+    thumbnailUrl: {
+      type: String,
+      default: "",
+    },
+
+    // -------------------------
+    // Video-specific metadata
+    // -------------------------
+
+    platform: {
+      type: String,
+      required: false,
+      // Examples: YouTube, Instagram
+    },
+
+    duration: {
+      type: Number,
+      required: false,
+    },
+
+    transcript: {
+      type: String,
+      default: "",
+    },
+
+    // -------------------------
+    // AI / semantic search
+    // -------------------------
+
+    aiDescription: {
+      type: String,
+      default: "",
+    },
+
     extractedText: {
-      // OCR output (images) or parsed text (PDFs/docs)
       type: String,
       default: "",
     },
+
     summary: {
-      // AI-generated short description/caption — very useful for images with sparse text
       type: String,
       default: "",
     },
+
     embedding: {
- 
       type: [Number],
       default: [],
     },
+
     tags: {
       type: [String],
       default: [],
     },
-    category:{
-        type: String
 
+    category: {
+      type: String,
+      default: "Other",
     },
 
-    // --- Processing pipeline state ---
+    // -------------------------
+    // Processing state
+    // -------------------------
+
     status: {
       type: String,
       enum: ["pending", "processing", "completed", "failed"],
       default: "pending",
       index: true,
     },
+
     processingError: {
       type: String,
       default: null,
     },
 
-    // --- File-type-specific metadata ---
+    // -------------------------
+    // File-type-specific metadata
+    // -------------------------
+
     pageCount: {
-      type: Number, // for PDFs/documents
+      type: Number,
+      required: false,
     },
+
     dimensions: {
       width: Number,
-      height: Number, // for images
+      height: Number,
     },
   },
   {
-    timestamps: true, // adds createdAt & updatedAt automatically
+    timestamps: true,
   }
 );
 
- fileSchema.index({ extractedText: "text", summary: "text", tags: "text" });
+// Regular text search
+fileSchema.index({
+  extractedText: "text",
+  summary: "text",
+  tags: "text",
+  transcript: "text",
+});
 
 module.exports = mongoose.model("File", fileSchema);

@@ -4,6 +4,7 @@ const youtubeService = require("../../services/youtube.service");
 const videoService = require("../../services/video.service");
 const geminiService = require("../../services/gemini.service");
 const embeddingService = require("../../services/embedding.service");
+const File = require("../../models/file.model");
 const fs = require("fs/promises");
 
 const videoController = {};
@@ -79,13 +80,14 @@ console.log('videoUrl',videoUrl);
 
         console.log("Transcript length:", transcript.length);
 
-        const newVideo = await Video.create({
+        const newVideo = await File.create({
             user: user,
             title: aiData.title || "",
             videoUrl,
             thumbnailUrl: thumbnailUrl || "",
             duration: duration || 0,
             platform: platform || "unknown",
+            fileType: duration > 0 ? "reel": "other",
             transcript: transcript || "",
             aiDescription: aiData.description || "",
             summary: aiData.summary || "",
