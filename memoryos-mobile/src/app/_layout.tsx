@@ -17,10 +17,10 @@ export default function RootLayout() {
      await SplashScreen.hideAsync(); 
       await new Promise(resolve => setTimeout(resolve, 3000));
       const hasOnboarded = await SecureStore.getItemAsync('onboarded');
-      // if(!hasOnboarded){
-      //   router.replace('/onboarding');
-      // }
-      // await SplashScreen.hideAsync();
+      if(!hasOnboarded){
+        router.replace('/onboarding');
+      }
+      await SplashScreen.hideAsync();
 
       setShowSplash(false);
     }
@@ -30,7 +30,7 @@ export default function RootLayout() {
   return (
     <>
     <Stack screenOptions={{ headerShown: false }}>
-      {/* <Stack.Screen name="auth/login" />r */}
+      <Stack.Screen name="auth/login" />
       <Stack.Screen name="tabs" />
     </Stack>
     {showSplash && <MemoryOSSplash />}

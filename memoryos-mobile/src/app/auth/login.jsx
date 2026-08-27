@@ -10,6 +10,7 @@ import {
 import { router } from 'expo-router';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import * as SecureStore from 'expo-secure-store';
+import { useEffect } from 'react';
 
 export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
@@ -41,8 +42,10 @@ export default function LoginScreen() {
         setError(data.message || 'Invalid email or password.');
         return;
       }
- console.log('data',data);
+ 
   await SecureStore.setItemAsync('sessionData', JSON.stringify(data));
+  console.log('data',data);
+      await SecureStore.setItemAsync('onboarded', JSON.stringify(true));
 
       router.replace('/tabs');
     } catch (err) {
@@ -52,6 +55,12 @@ export default function LoginScreen() {
     }
   }
 
+  useEffect(() => {
+    (async () => {
+      const raw = await SecureStore.getItemAsync('onboarded');
+      if (raw) router.replace('/tabs');
+    })();
+  },[router]);
   return (
     <View style={styles.container}>
 
