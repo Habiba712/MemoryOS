@@ -62,28 +62,18 @@ videoService.downloadVideoClip = async (videoUrl, maxDurationSeconds = 15) => {
     const outputPath = path.join(os.tmpdir(), `clip-${Date.now()}.mp4`);
 
     try {
-        const { stdout } = await execFileAsync(
-            "yt-dlp",
-             ["-f", "bv+ba/best", "-g", videoUrl]
-            );
-        const urls = stdout.trim().split("\n"); // could be [video, audio] or just [combined]
-
-        const ffmpegArgs = ["-y"];
-        urls.forEach(u => ffmpegArgs.push("-i", u));
-        ffmpegArgs.push(
-            "-t", String(maxDurationSeconds), 
-            "-c:v", "libx264",
-            "-c:a", "aac",
-            "-movflags", "faststart",
-            outputPath
-        );
-
-        await execFileAsync(ffmpegPath, ffmpegArgs);
+        await execFileAsync("yt-dlp", [
+            "-f", "bv+ba/best",
+            "--download-sections", `*0-${maxDurationSeconds}`,
+            "--force-keyframes-at-cuts",
+            "--recode-video", "mp4",
+            "-o", outputPath,
+            videoUrl,
+        ]);
 
         return await fs.readFile(outputPath);
     } finally {
         await fs.unlink(outputPath).catch(() => {});
     }
 };
-
 module.exports = videoService;

@@ -8,6 +8,19 @@ const File = require("../../models/file.model");
 const fs = require("fs/promises");
 
 const videoController = {};
+async function callGeminiWithRetry(fn, maxRetries = 3) {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            return await fn();
+        } catch (err) {
+            const isOverloaded = err.message?.includes("UNAVAILABLE") || err.message?.includes("503");
+            if (!isOverloaded || attempt === maxRetries - 1) throw err;
+            const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+            console.log(`Gemini overloaded, retrying in ${delay}ms...`);
+            await new Promise((r) => setTimeout(r, delay));
+        }
+    }
+}
 
 videoController.saveVideo = async (req, res) => {
     try {
@@ -44,11 +57,9 @@ console.log('videoUrl',videoUrl);
         };
 
         if (videoBuffer) {
+            console.log("entering ai block");
             try {
-                aiData = await geminiService.describeVideo(
-                    videoBuffer,
-                    "video/mp4"
-                );
+               aiData = await callGeminiWithRetry(() => geminiService.describeVideo(videoBuffer, "video/mp4"));
                 console.log('aiData', aiData);
             } catch (err) {
                 console.log("No video description available:", err.message);
