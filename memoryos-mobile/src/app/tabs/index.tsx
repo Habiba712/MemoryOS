@@ -208,7 +208,7 @@ const sortedFiles = [...recentFiles].sort(
         {/* Quick Access */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Quick Access</Text>
-          <Pressable onPress={() => router.push('/tabs/files')}>
+          <Pressable onPress={() => router.push('/tabs/explore')}>
             <Text style={styles.viewAll}>See all</Text>
           </Pressable>
 
@@ -312,8 +312,10 @@ const sortedFiles = [...recentFiles].sort(
                   </AnimatedEntry>
               );
             })}
-              
-          <Text style={styles.viewAll}>See all</Text>
+             <Pressable onPress={() => router.push('/tabs/explore')}>
+               <Text style={styles.viewAll}>See all</Text>
+              </Pressable>   
+         
         
         </View>
        
