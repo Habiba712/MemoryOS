@@ -6,12 +6,7 @@ export default function SettingsScreen() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.topBar}>
-          <Pressable style={styles.iconButton}>
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80' }}
-              style={styles.avatar}
-            />
-          </Pressable>
+        
           <Text style={styles.greeting}>Hi, John</Text>
          
         </View>
