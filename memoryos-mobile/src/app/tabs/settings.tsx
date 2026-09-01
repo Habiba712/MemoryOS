@@ -30,7 +30,22 @@ export default function SettingsScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
+const handleLogout = async () => {
+  const sessionData = await SecureStore.getItemAsync('sessionData');
 
+  if (sessionData) {
+    const parsed = JSON.parse(sessionData);
+
+    delete parsed.token;
+
+    await SecureStore.setItemAsync(
+      'sessionData',
+      JSON.stringify(parsed)
+    );
+  }
+
+  router.replace('/auth/login');
+};
   const getUser = async () =>{
     console.log('userId', userId)
     if (!userId) return;
@@ -202,10 +217,8 @@ export default function SettingsScreen() {
 
         <Pressable
           style={styles.logoutButton}
-          onPress={() => {
-            // logout logic here
-            router.replace('/auth/login');
-          }}
+          onPress={handleLogout}
+          
         >
           <LogOut
             size={20}
