@@ -58,7 +58,8 @@ export default function LoginScreen() {
   useEffect(() => {
     (async () => {
       const raw = await SecureStore.getItemAsync('onboarded');
-      if (raw) router.replace('/tabs');
+      console.log('rawjjj', raw)
+      if (raw !== null || raw !== undefined) router.replace('/tabs');
     })();
   },[router]);
   return (

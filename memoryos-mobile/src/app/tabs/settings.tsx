@@ -31,20 +31,17 @@ export default function SettingsScreen() {
   const [userId, setUserId] = useState<string | null>(null);
 
 const handleLogout = async () => {
-  const sessionData = await SecureStore.getItemAsync('sessionData');
+ await SecureStore.deleteItemAsync('sessionData');
 
-  if (sessionData) {
-    const parsed = JSON.parse(sessionData);
-
-    delete parsed.token;
-
-    await SecureStore.setItemAsync(
-      'sessionData',
-      JSON.stringify(parsed)
-    );
-  }
-
+ const on = await SecureStore.getItemAsync('onboarded');
+ console.log('on', on)
+ if(on){
+  await SecureStore.deleteItemAsync('onboarded');
   router.replace('/auth/login');
+
+ }
+
+  
 };
   const getUser = async () =>{
     console.log('userId', userId)

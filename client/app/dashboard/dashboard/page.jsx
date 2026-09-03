@@ -49,6 +49,7 @@ export default function DashboardPage(){
 
 
   const loadDashboard = async () => {
+     if (!userId) return;
       try {
         const res01 = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/file/filesByUser/${userId}`);
         if (!res01.ok) throw new Error("Failed to load dashboard");
@@ -172,13 +173,17 @@ setCollections(Object.keys(collectionsMap));
   }
 
   useEffect(() => {
+    console.log('user', userId)
    
-    loadDashboard();
+    // loadDashboard();
     // getUrls();
   }, [userId, token]);
+
+
 console.log('collec', collectionFiles)
   useEffect(() => {
     const sessionData = JSON.parse(localStorage.getItem('sessionData'));
+    console.log('session', sessionData)
     setUserId(sessionData.userId);
     setToken(sessionData.token);
   },[])
@@ -260,7 +265,7 @@ console.log('collec', collectionFiles)
             </Link>
           </div>
 
- <div className="grid grid-cols-5 gap-4">
+ {/* <div className="grid grid-cols-5 gap-4">
             {loading
               ? Array.from({ length: 5 }).map((_, i) => (
                   <div key={i} className="h-36 rounded-xl bg-gray-100 animate-pulse" />
@@ -268,7 +273,7 @@ console.log('collec', collectionFiles)
               : videoFiles
               .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
               .map((file) => <FileCard key={file._id} file={file} />)}
-          </div>
+          </div> */}
           <div className="grid grid-cols-5 gap-4">
             {loading
               ? Array.from({ length: 5 }).map((_, i) => (
@@ -319,6 +324,7 @@ function StatCard({ icon, label, value, sub }) {
 }
 
 function FileCard({ file }) {
+  console.log('file', file)
   const badge = fileTypeBadge(file.fileType || file.platform);
 
   return (
