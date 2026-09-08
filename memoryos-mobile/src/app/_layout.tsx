@@ -17,6 +17,7 @@ export default function RootLayout() {
      await SplashScreen.hideAsync(); 
       await new Promise(resolve => setTimeout(resolve, 3000));
       const hasOnboarded = await SecureStore.getItemAsync('onboarded');
+      
       if(!hasOnboarded){
         router.replace('/onboarding');
       }

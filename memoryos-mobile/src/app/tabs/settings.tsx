@@ -33,13 +33,7 @@ export default function SettingsScreen() {
 const handleLogout = async () => {
  await SecureStore.deleteItemAsync('sessionData');
 
- const on = await SecureStore.getItemAsync('onboarded');
- console.log('on', on)
- if(on){
-  await SecureStore.deleteItemAsync('onboarded');
   router.replace('/auth/login');
-
- }
 
   
 };

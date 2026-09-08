@@ -28,7 +28,8 @@ export default function LoginScreen() {
     try {
       // router.replace('/tabs');
 
-         const res = await fetch(`http://192.168.0.239:4000/api/auth/login`, {
+         const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`
+          , {
         method: "POST",
         headers: { "content-Type": "application/json" },
         // credentials: "include",
@@ -58,8 +59,11 @@ export default function LoginScreen() {
   useEffect(() => {
     (async () => {
       const raw = await SecureStore.getItemAsync('onboarded');
+      const getSessionData = await SecureStore.getItemAsync('sessionData');
       console.log('rawjjj', raw)
-      if (raw !== null || raw !== undefined) router.replace('/tabs');
+      const getToken = getSessionData ? JSON.parse(getSessionData).token : null;
+      console.log('getToken', getToken)
+      if (raw && getToken) router.replace('/tabs');
     })();
   },[router]);
   return (
