@@ -20,6 +20,7 @@ export type MemoryFile = {
     };
     thumbnailUrl?: string;
     uri?: string;
+    platform?: string;
 
     aiDescription?: string;
     summary?: string;
@@ -48,7 +49,7 @@ export default function FileDetailScreen({
     const hasDescription = !!file.aiDescription?.trim();
     const hasTags = !!file.tags && file.tags.length > 0;
     const hasCategory = !!file.category?.trim();
-    console.log('file', file.thumbnailUrl)
+    console.log('file', file.platform)
 
     return (
         <View style={styles.container}>
@@ -68,7 +69,7 @@ export default function FileDetailScreen({
                 <View style={styles.previewCard}>
                    
                         <Image
-                            source={{ uri: file.thumbnailUrl }}
+                            source={{ uri: file.thumbnailUrl || file.uri }}
                             style={styles.imagePreview}
                             resizeMode="cover"
                         />
@@ -85,9 +86,9 @@ export default function FileDetailScreen({
                                 <Ionicons name="play" size={26} color="#fff" />
                             </View>
                         </View>
-                    )}
+                    )} */}
 
-                    {file.fileType === "Instagram" && (
+                    {file.fileType === "Instagram"  || file.platform === "Instagram" && (
                         <View style={styles.reelPreview}>
                             <Image
                                 source={{ uri: file.thumbnailUrl }}
@@ -98,7 +99,7 @@ export default function FileDetailScreen({
                                 <Ionicons name="play" size={26} color="#fff" />
                             </View>
                         </View>
-                    )} */}
+                    )}
 
                     {file.fileType === "pdf" && (
                         <View style={styles.pdfPreview}>
@@ -126,7 +127,7 @@ export default function FileDetailScreen({
                     )}
                 </View>
 
-                {/* Title / size / date row */}
+                
                 <View style={styles.infoRow}>
                     <View style={styles.fileBadge}>
                         {file.fileType === "pdf" ? (
@@ -155,8 +156,7 @@ export default function FileDetailScreen({
                         <Ionicons name="ellipsis-vertical" size={18} color="#8a94a8" />
                     </Pressable>
                 </View>
-
-                {/* Category + tags — only rendered if there's real data */}
+ 
                 {(hasCategory || hasTags) && (
                     <View style={styles.metaCard}>
                         {hasCategory && (

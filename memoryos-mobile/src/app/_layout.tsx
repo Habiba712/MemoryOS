@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
  import * as SplashScreen from 'expo-splash-screen';
 import * as SecureStore from 'expo-secure-store';
 import MemoryOSSplash from '@/components/mySplash';
+import { storage } from '../services/storage';
 import { router } from 'expo-router';
 
 
@@ -16,7 +17,7 @@ export default function RootLayout() {
     async function prepare() {
      await SplashScreen.hideAsync(); 
       await new Promise(resolve => setTimeout(resolve, 3000));
-      const hasOnboarded = await SecureStore.getItemAsync('onboarded');
+      const hasOnboarded = await storage.getItem('onboarded');
       
       if(!hasOnboarded){
         router.replace('/onboarding');

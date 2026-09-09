@@ -72,6 +72,7 @@ function getItemVisual(item: any) {
   if (item.fileType === 'image') return { icon: 'image', bg: '#0f2b2b', color: '#4fd1c5' };
   if (item.fileType === 'video') return { icon: 'play', bg: '#1c1230', color: '#a685ff' };
   if (item.platform === "Instagram") return {icon: 'logo-instagram', bg: '#3a1a33', color: '#e35bb8'};
+  if(item.platform === "Youtube") return {icon: 'logo-youtube', bg: '#3a1a33', color: '#e73111'};
   if (item.videoUrl || item.platform) return { icon: 'link', bg: '#0f2b2b', color: '#4fd1c5' };
   
   return { icon: 'document', bg: '#1a1f2e', color: '#9aa4b8' };
@@ -264,6 +265,7 @@ const sortedFiles = [...recentFiles].sort(
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
             : sortedFiles.slice(0, 6).map((file, i) => {
               const visual = getItemVisual(file);
+              console.log('file', file.platform)
               return (
           <AnimatedEntry key={file._id} index={i}>
                     <Pressy style={[viewMode === "list" ? styles.fileRow : styles.fileColItem]} onPress={() =>
@@ -277,11 +279,13 @@ const sortedFiles = [...recentFiles].sort(
                       <View style={[viewMode === "grid" ? styles.fileThumbnailContainer : {  
    
     position: "relative",borderWidth:1, borderColor: "#1f2740", borderRadius: 14}]}>
-                        <Image
+                     {
+                       file.thumbnailUrl  || file.url ? <Image
                           style={[viewMode === "grid" ? styles.fileThumbnail : { width: 70, height: 70, borderRadius: 10}]}
                           source={{ uri: file.thumbnailUrl || file.url }}
                           resizeMode="cover"
-                        />
+                        /> : <Ionicons name={visual.icon as any} color={"#d1d1d13f"} size={viewMode === "list" ? 70 : 140}/>
+                     }
                         <View style={[viewMode === "list" ? {opacity: 0.8,width: 20, height: 20,position: "absolute",top: 47, left: 3, right: 10, bottom: 0, borderRadius: 10} : {opacity: 0.8,width: 30, height: 30, position: "absolute", top: 117, left: 5, right: 10, bottom: 0, backgroundColor:visual.bg, borderRadius: 10}]}>
                            <Ionicons name={visual.icon as any} size={viewMode === "list" ? 20 : 30} 
                            style={viewMode === "list"  ? {opacity: 0.8, borderRadius: 5, display:"flex", justifyContent: "center", alignItems: "center"} : {opacity: 0.8,borderRadius: 10, display:"flex", justifyContent: "center", alignItems: "center"}}

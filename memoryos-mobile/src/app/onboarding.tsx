@@ -16,6 +16,7 @@ import { router } from 'expo-router';
 import BrainOrbit from '@/components/onboarding/Brainorbit';
 import SearchPreview from '@/components/onboarding/Searchpreview';
 import PrivacyShield from '@/components/onboarding/Privacyshield';
+import { storage } from '../services/storage';
 
 const { width } = Dimensions.get('window');
 
@@ -85,7 +86,7 @@ export default function OnboardingScreen() {
   };
 
   const finishOnboarding = async () => {
-    await SecureStore.setItemAsync('hasOnboarded', 'true');
+    await storage.setItem('hasOnboarded', 'true');
     router.replace('/auth/login');
   };
 

@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
-import * as SecureStore from 'expo-secure-store';
+// import * as SecureStore from 'expo-secure-store';
+import { storage } from '../../services/storage';
 import { useEffect } from 'react';
 
 export default function LoginScreen() {
@@ -44,9 +45,9 @@ export default function LoginScreen() {
         return;
       }
  
-  await SecureStore.setItemAsync('sessionData', JSON.stringify(data));
+  await storage.setItem('sessionData', JSON.stringify(data));
   console.log('data',data);
-      await SecureStore.setItemAsync('onboarded', JSON.stringify(true));
+      await storage.setItem('onboarded', JSON.stringify(true));
 
       router.replace('/tabs');
     } catch (err) {
@@ -58,8 +59,8 @@ export default function LoginScreen() {
 
   useEffect(() => {
     (async () => {
-      const raw = await SecureStore.getItemAsync('onboarded');
-      const getSessionData = await SecureStore.getItemAsync('sessionData');
+      const raw = await storage.getItem('onboarded');
+      const getSessionData = await storage.getItem('sessionData');
       console.log('rawjjj', raw)
       const getToken = getSessionData ? JSON.parse(getSessionData).token : null;
       console.log('getToken', getToken)
