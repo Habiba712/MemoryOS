@@ -11,6 +11,7 @@ import { router } from 'expo-router';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 // import * as SecureStore from 'expo-secure-store';
 import { storage } from '../../services/storage';
+import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 
 export default function LoginScreen() {
@@ -182,6 +183,9 @@ export default function LoginScreen() {
 
         {/* Google */}
         <Pressable style={styles.googleButton}>
+              <View>
+                <Ionicons name="logo-google" size={18} color="#e33201" />
+            </View>
           <Text style={styles.googleText}>
             Continue with Google
           </Text>
@@ -350,6 +354,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
   },
 
   googleText: {
