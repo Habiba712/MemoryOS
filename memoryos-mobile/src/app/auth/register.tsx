@@ -32,12 +32,12 @@ export default function LoginScreen() {
     try {
       // router.replace('/tabs');
 
-         const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/auth/login`
+         const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/user/register`
           , {
         method: "POST",
         headers: { "content-Type": "application/json" },
         // credentials: "include",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await res.json();
@@ -52,7 +52,7 @@ export default function LoginScreen() {
   console.log('data',data);
       await storage.setItem('onboarded', JSON.stringify(true));
 
-      router.replace('/tabs');
+      router.replace('/auth/login');
     } catch (err) {
       setError('Something went wrong. Please try again.');
     } finally {

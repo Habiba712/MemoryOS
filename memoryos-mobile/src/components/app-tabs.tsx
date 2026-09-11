@@ -26,11 +26,11 @@ export default function AppTabs() {
   <Label>Upload</Label>
 </NativeTabs.Trigger>
 
-<NativeTabs.Trigger name="profile">
+{/* <NativeTabs.Trigger name="profile">
   <Icon src={<VectorIcon family={MaterialIcons} name="person" />}
   />
   <Label>Profile</Label>
-</NativeTabs.Trigger>
+</NativeTabs.Trigger> */}
 
 <NativeTabs.Trigger name="settings">
   <Icon src={<VectorIcon family={MaterialIcons} name="settings" />}

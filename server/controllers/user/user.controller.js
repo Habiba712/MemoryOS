@@ -105,7 +105,7 @@ userController.register = async (req, res) => {
             email,
             username,
             password,
-            avatar
+          
 
         } = req.body;
         console.log(email, username, password)
@@ -125,7 +125,7 @@ userController.register = async (req, res) => {
                 email,
                 username,
              
-                avatar,
+           
               
                 password: await bcrypt.hash(password, 10)
             }

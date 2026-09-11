@@ -179,9 +179,9 @@ const sortedFiles = [...recentFiles].sort(
       >
         {/* Top bbar */}
         <View style={styles.topBar}>
-          <Pressable style={styles.iconButton} onPress={() => router.push('/menu')}>
+          {/* <Pressable style={styles.iconButton} onPress={() => router.push('/menu')}>
             <Ionicons name="menu" size={20} color="#fff" />
-          </Pressable>
+          </Pressable> */}
           <Pressable style={styles.iconButton}>
             <Ionicons name="notifications-outline" size={18} color="#fff" />
           </Pressable>
@@ -263,7 +263,7 @@ const sortedFiles = [...recentFiles].sort(
         <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-            : sortedFiles.slice(0, 6).map((file, i) => {
+            : sortedFiles.length > 0 ? sortedFiles.slice(0, 6).map((file, i) => {
               const visual = getItemVisual(file);
               console.log('file', file.platform)
               return (
@@ -314,10 +314,19 @@ const sortedFiles = [...recentFiles].sort(
 
                     </Pressy>
                   </AnimatedEntry>
+                  
               );
-            })}
+              
+            }
+          
+          )
+            : 
+            <View>
+              <Text style={{color: "#d1d0d0", fontSize: 15, fontWeight: "300", textAlign: "center"}}>No files found</Text>
+              </View>
+            }
              <Pressable onPress={() => router.push('/tabs/explore')}>
-               <Text style={styles.viewAll}>See all</Text>
+               <Text style={[sortedFiles.length > 0 ? styles.viewAll : {display: "none"}]}>See all</Text>
               </Pressable>   
          
         
@@ -344,7 +353,7 @@ const styles = StyleSheet.create({
 
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     marginBottom: 18,
     marginTop: 40,
   },

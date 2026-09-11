@@ -187,9 +187,9 @@ export default function FilesScreen() {
             />}
           >
              <View style={styles.topBar}>
-              <Pressable style={styles.iconButton} onPress={() => router.push('/menu')}>
+              {/* <Pressable style={styles.iconButton} onPress={() => router.push('/menu')}>
                 <Ionicons name="menu" size={20} color="#fff" />
-              </Pressable>
+              </Pressable> */}
               <Pressable style={styles.iconButton}>
                 <Ionicons name="notifications-outline" size={18} color="#fff" />
               </Pressable>
@@ -216,7 +216,7 @@ export default function FilesScreen() {
        <View style={[viewMode === "list" ? styles.filesList : styles.fileCol]}>
                {loading
                  ? Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} style={styles.fileRowSkeleton} />)
-                 : files.map((file, i) => {
+                 :files.length > 0 ? files.map((file, i) => {
                    const visual = getItemVisual(file);
                    return (
                <AnimatedEntry key={file._id} index={i}>
@@ -266,9 +266,14 @@ export default function FilesScreen() {
                          </Pressy>
                        </AnimatedEntry>
                    );
-                 })}
+                  
+                 })
+                  :
+                     <View>
+                                 <Text style={{color: "#d1d0d0", fontSize: 15, fontWeight: "300", textAlign: "center"}}>No files found</Text>
+                                 </View>
+                                 }
                    
-               <Text style={styles.viewAll}>See all</Text>
              
              </View>
      
@@ -294,7 +299,7 @@ const styles = StyleSheet.create({
 
   topBar: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     
     marginTop: 40,
   },
